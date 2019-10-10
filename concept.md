@@ -14,7 +14,7 @@ Yes the game is well specified. But we will be adding additional rules to increa
 ## Is there any game functionality that you’d like to include but may need to cut if you run out of time?
 Yes, we would like to add the following functionality:
 1. The game will have option to choose different shapes like triangles, hexagon and cross.
-![triangle](assets/images/traingle.png)
+![triangle](assets/images/triangle.png)
 ![hexagon](assets/images/hexagon.jpg)
 2. The players will try to enclose triangles and try to capture as many triangles as possible in the game of triangle and hexagon.
 3. We will have a championship board where each player will be able to see their ranking compared to other players. Based on the games won by the player, points will get added and the cumulative score can be seen on the leadership board. The player gets a badge if he reaches a certain amount of points. There are three levels of badges(Bronze, Silver and Gold).     
