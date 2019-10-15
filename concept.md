@@ -1,5 +1,9 @@
 ﻿# Game of Dots
  
+## Authors:
+1. Prajakta Rodrigues
+2. Sukhada Khatu
+ 
 ## What game are you going to build?
 It is based on the age-old game played using pencil and paper. The game can be played by two or more players. It has multiple variants and its one popular variant is dots and boxes. The game board consists of a grid structure of dots. Each player gets a turn to draw a vertical or horizontal line joining two dots on the grid. If the line drawn completes any box in the grid, the player gets a point and another chance to play. The player who has completed maximum boxes wins the game. In another variant, called Strings-and-Coins there are various coins attached by various strings. In each turn, the player can cut one string and if the move frees the coin, the player scores a point. Our game will be adding additional rules to the traditional variant of the game to make it more interesting. 
 
