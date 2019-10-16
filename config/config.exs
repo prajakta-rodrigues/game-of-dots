@@ -6,11 +6,11 @@
 use Mix.Config
 
 # Configures the endpoint
-config :gameofdots, GameOFDotsWeb.Endpoint,
+config :gameofdots, GameOfDotsWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "cCJYQLnt/HqBGqyowai4HvJ6Y0lF1jle6FiAQP6fZehGCDNX8lPwQMD/+S/tLkOu",
-  render_errors: [view: GameOFDotsWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: GameOFDots.PubSub,
+  render_errors: [view: GameOfDotsWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: GameOfDots.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
