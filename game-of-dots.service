@@ -1,0 +1,16 @@
+[Unit]
+Description=Game of Dots
+
+[Service]
+Type=simple
+User=gameofdots
+Group=gameofdots
+Restart=on-failure
+Environment=MIX_ENV=prod "PORT=3791"
+Environment=LANG=en_US.UTF-8
+
+WorkingDirectory=/home/gameofdots/game-of-dots
+ExecStart=bash /home/gameofdots/game-of-dots/start.sh
+
+[Install]
+WantedBy=multi-user.target
