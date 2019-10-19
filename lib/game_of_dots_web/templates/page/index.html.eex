@@ -1,5 +1,4 @@
-<div class="row">
-  <div class="column">
-   <h1>Just</h1>
+<div class="home">
+  <div id="root">
   </div>
 </div>
