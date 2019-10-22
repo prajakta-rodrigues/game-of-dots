@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
-import css from "../css/starter-game.css";
 import logo from "../images/boxes.jpg";
 import question from "../images/question.png";
 import GameTable from "./game-table";
@@ -34,7 +33,8 @@ class Home extends React.Component {
         super(props);
         this.state = {
             showPopup: false,
-            loggedIn: false
+            loggedIn: false,
+            userName: ""
         };
     }
 
@@ -45,10 +45,18 @@ class Home extends React.Component {
     }
 
     submit() {
+
       this.setState({
         showPopup: false,
-        loggedIn: true
+        loggedIn: true,
+        userName:this.state.userName
       })
+    }
+
+    userNameChanged() {
+      let stateCpy = _.cloneDeep(this.state);
+      stateCpy.userName = event.target.value;
+      this.setState(stateCpy);
     }
 
     render() {
@@ -58,14 +66,17 @@ class Home extends React.Component {
 
         let box = <img src={logo} alt={'box'}/>
         let labelname = <label htmlFor="username">User name:</label>
-        let textbox = <input type="text" id="username"></input>
+        let textbox = <input type="text" id="username"
+          value ={this.state.userName}
+          onChange= {this.userNameChanged.bind(this)}></input>
         let labelpass = <label htmlFor="password">Password:</label>
         let password = <input type="password" id="password" name="password"></input>
         let button = <div className="column">
           <p><button onClick = {this.submit.bind(this)}>Submit</button></p>
         </div>
 
-        let questionMark = <a onClick={this.togglePopup.bind(this)}><img src={question} alt={'question mark'}/></a>
+        let questionMark = <a onClick={this.togglePopup.bind(this)}><img src={question}
+          alt={'question mark'}/></a>
 
         if(!this.state.loggedIn) {
           return <div>
@@ -93,7 +104,7 @@ class Home extends React.Component {
           </div>
         }
         else {
-          return <GameTable></GameTable>
+          return <GameTable userName = {this.state.userName}></GameTable>
         }
 
     }
