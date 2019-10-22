@@ -2,16 +2,29 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import Konva from 'konva';
+import Portal from './portal'
 import {Stage, Layer, Rect, Text,Line, Circle} from 'react-konva';
-
+import css from "../css/game-table.css";
 
 class GameTable extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       linesDrawn: [],
       validLinesRemaining: [],
+      loggedInUser: props.userName,
+      turn: 0,
+      players: [{
+        name:"User1",
+        color:"blue",
+        score: 0
+      },
+      {
+        name:"User2",
+        color:"yellow",
+        score: 0
+      }
+    ],
       currentUserLine: {
         x: 200,
         y : 50,
@@ -25,19 +38,18 @@ class GameTable extends React.Component {
   }
 
   handleMouseDown() {
+    if(this.state.loggedInUser == this.state.players[this.state.turn].name) {
+      const stage = this.stage.getStage();
+      let isDotCheck = new RegExp('^circle');
+      if(isDotCheck.test(stage.clickStartShape.attrs.name)) {
 
-
-    const stage = this.stage.getStage();
-    let isDotCheck = new RegExp('^circle');
-    if(isDotCheck.test(stage.clickStartShape.attrs.name)) {
-
-      this.drawing = true;
+        this.drawing = true;
+      }
     }
-
   }
 
   handleMouseUp() {
-
+    if(this.state.loggedInUser == this.state.players[this.state.turn].name) {
     const stage = this.stage.getStage();
     const point = stage.getPointerPosition();
     let isDotCheck = new RegExp('^circle');
@@ -58,6 +70,7 @@ class GameTable extends React.Component {
         }
 
         );
+        stateCpy.turn = (stateCpy.turn + 1) % stateCpy.players.length;
         this.setState(stateCpy);
       }
 
@@ -75,9 +88,10 @@ class GameTable extends React.Component {
     startCpy.currentUserLine = currentUserLine;
     this.setState(startCpy);
   }
+  }
 
   handleMouseMove() {
-    if(this.drawing) {
+    if(this.state.loggedInUser == this.state.players[this.state.turn].name && this.drawing) {
 
       const stage = this.stage.getStage();
       const point = stage.getPointerPosition();
@@ -137,6 +151,7 @@ class GameTable extends React.Component {
 
 
     return (
+
       <Stage
         width={window.innerWidth}
         height={window.innerHeight}
@@ -149,6 +164,11 @@ class GameTable extends React.Component {
           }
         }>
         <Layer>
+          <Portal>
+            <div className="turn"><h2>Score:</h2>
+              <h2>Turn: {this.state.players[this.state.turn].name}</h2>
+            </div>
+          </Portal>
           <Line
             x = {this.state.currentUserLine.x}
             y = {this.state.currentUserLine.y}
