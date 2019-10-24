@@ -9,6 +9,7 @@ import css from "../css/game-table.css";
 class GameTable extends React.Component {
   constructor(props) {
     super(props);
+    this.props = props
     this.initX = 200;
     this.initY = 50;
     this.scale = 100
@@ -23,7 +24,6 @@ class GameTable extends React.Component {
         {x1:2, y1:2, x2:2, y2:3},{x1:2, y1:3, x2:3, y2:3},
           {x1:3, y1:3, x2:3, y2:2},{x1:3, y1:2, x2:2, y2:2}],
       validLinesRemaining: [],
-      loggedInUser: props.userName,
       turn: 0,
       players: [{
         name:"User1",
@@ -42,21 +42,13 @@ class GameTable extends React.Component {
           {x1: 0, y1: 1, x2: 1, y2 : 2}
         ]
       }
-    ],
-      currentUserLine: {
-        x: 0,
-        y : 0,
-        key:"currentUserLine",
-
-        points : [],
-        stroke : "red"
-      }
+    ]
     };
 
   }
 
   handleMouseDown() {
-    if(this.state.loggedInUser == this.state.players[this.state.turn].name) {
+    if(this.props.userName == this.state.players[this.state.turn].name) {
       const stage = this.stage.getStage();
       let isDotCheck = new RegExp('^circle');
       if(isDotCheck.test(stage.clickStartShape.attrs.name)) {
@@ -67,7 +59,7 @@ class GameTable extends React.Component {
   }
 
   handleMouseUp() {
-    if(this.state.loggedInUser == this.state.players[this.state.turn].name) {
+    if(this.props.userName == this.state.players[this.state.turn].name) {
     const stage = this.stage.getStage();
     const point = stage.getPointerPosition();
     let isDotCheck = new RegExp('^circle');
@@ -111,7 +103,7 @@ class GameTable extends React.Component {
   }
 
   handleMouseMove() {
-    if(this.state.loggedInUser == this.state.players[this.state.turn].name
+    if(this.props.userName == this.state.players[this.state.turn].name
       && this.drawing) {
 
       const stage = this.stage.getStage();
@@ -206,6 +198,18 @@ class GameTable extends React.Component {
       }
       y += 1;
     }
+    let currentLine = null;
+    if('currentUserLine' in this.state) {
+      currentLine = <Line
+        x = {this.state.currentUserLine.x}
+        y = {this.state.currentUserLine.y}
+        key = {this.state.currentUserLine.key}
+        points = {this.state.currentUserLine.points}
+        stroke = {this.state.currentUserLine.stroke}
+
+        >
+      </Line>
+    }
 
     return (
 
@@ -234,15 +238,7 @@ class GameTable extends React.Component {
               <h2>Turn: {this.state.players[this.state.turn].name}</h2>
             </div>
           </Portal>
-          <Line
-            x = {this.state.currentUserLine.x}
-            y = {this.state.currentUserLine.y}
-            key = {this.state.currentUserLine.key}
-            points = {this.state.currentUserLine.points}
-            stroke = {this.state.currentUserLine.stroke}
-
-            >
-          </Line>
+          {currentLine}
           {drawnLines}
           {boxes}
           {grid}
