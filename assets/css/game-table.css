@@ -1,5 +1,21 @@
+
 .turn {
-  top: 0;
-  left: 0;
+  top: 10px;
+  left: 10px;
+  padding: 1%;
   position: fixed;
+  font-size: 2.5rem;
+  border: 1px solid;
+}
+
+.header {
+  display: inline-flex;
+  width: 33.33%;
+  font-size: 2rem;
+}
+
+.row-data {
+  display: inline-flex;
+  width: 33.33%;
+  font-size: 2rem;
 }

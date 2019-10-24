@@ -1,4 +1,6 @@
-<div class="home">
-  <div id="root">
+<body>
+  <div class="home">
+    <div id="root">
+    </div>
   </div>
-</div>
+</body>

@@ -9,36 +9,50 @@ import css from "../css/game-table.css";
 class GameTable extends React.Component {
   constructor(props) {
     super(props);
+    this.props = props
+    this.initX = 200;
+    this.initY = 50;
+    this.scale = 100
     this.state = {
-      linesDrawn: [],
+      gameName:"game1",
+      ownerId:"User1",
+      gameStarted: false,
+      gameOver: false,
+      type:"square",
+      dimensions: {
+        length: 5,
+        breadth: 5
+      },
+      linesDrawn: [{x1:0, y1:0, x2:0, y2:1},{x1:0, y1:0, x2:1, y2:0},
+        {x1:1, y1:0, x2:1, y2:1},{x1:1, y1:1, x2:0, y2:1},
+        {x1:2, y1:2, x2:2, y2:3},{x1:2, y1:3, x2:3, y2:3},
+          {x1:3, y1:3, x2:3, y2:2},{x1:3, y1:2, x2:2, y2:2}],
       validLinesRemaining: [],
-      loggedInUser: props.userName,
       turn: 0,
       players: [{
         name:"User1",
         color:"blue",
-        score: 0
+        score: 0,
+        boxesAcquired: [
+          {x1: 0, y1: 0, x2: 1, y2: 1}
+        ]
       },
       {
         name:"User2",
         color:"yellow",
-        score: 0
+        score: 0,
+        boxesAcquired: [
+          {x1: 2, y1: 2, x2: 3, y2: 3},
+          {x1: 0, y1: 1, x2: 1, y2 : 2}
+        ]
       }
-    ],
-      currentUserLine: {
-        x: 200,
-        y : 50,
-        key:"currentUserLine",
-        strokeWidth:20,
-        points : [],
-        stroke : "red"
-      }
+    ]
     };
 
   }
 
   handleMouseDown() {
-    if(this.state.loggedInUser == this.state.players[this.state.turn].name) {
+    if(this.props.userName == this.state.players[this.state.turn].name) {
       const stage = this.stage.getStage();
       let isDotCheck = new RegExp('^circle');
       if(isDotCheck.test(stage.clickStartShape.attrs.name)) {
@@ -49,27 +63,29 @@ class GameTable extends React.Component {
   }
 
   handleMouseUp() {
-    if(this.state.loggedInUser == this.state.players[this.state.turn].name) {
+    if(this.props.userName == this.state.players[this.state.turn].name) {
     const stage = this.stage.getStage();
     const point = stage.getPointerPosition();
     let isDotCheck = new RegExp('^circle');
     let start = stage.clickStartShape.attrs
     let end = stage.clickEndShape.attrs
+    console.log(start.x, start.y, end.x, end.y);
+    console.log((start.x - this.initX)/ this.scale);
+    console.log((start.y - this.initY)/ this.scale);
     if(isDotCheck.test(start.name) &&
     isDotCheck.test(end.name)) {
-      if((start.x == end.x && Math.abs(start.y - end.y) == 100)
-      || (start.y == end.y && Math.abs(start.x - end.x) == 100)) {
+      if((start.x == end.x && Math.abs(start.y - end.y) == this.scale)
+      || (start.y == end.y && Math.abs(start.x - end.x) == this.scale)) {
         let stateCpy = _.cloneDeep(this.state);
         stateCpy.linesDrawn.push({
-          x: start.x,
-          y : start.y,
-          key:"userLine" + start.x + "" + start.y + "" + end.x + "" + end.y,
-          strokeWidth:20,
-          points : [0, 0, end.x - start.x , end.y - start.y],
-          stroke : "black"
+          x1: (start.x - this.initX)/ this.scale ,
+          y1: (start.y - this.initY)/ this.scale,
+          x2: (end.x - this.initX) / this.scale,
+          y2: (end.y - this.initY) / this.scale
         }
-
         );
+        console.log(stateCpy.linesDrawn[1]);
+        console.log(stateCpy.linesDrawn[0]);
         stateCpy.turn = (stateCpy.turn + 1) % stateCpy.players.length;
         this.setState(stateCpy);
       }
@@ -80,7 +96,7 @@ class GameTable extends React.Component {
       x: 0,
       y : 0,
       key: "currentUserLine",
-      strokeWidth:20,
+
       points : [],
       stroke : "red"
     }
@@ -91,7 +107,8 @@ class GameTable extends React.Component {
   }
 
   handleMouseMove() {
-    if(this.state.loggedInUser == this.state.players[this.state.turn].name && this.drawing) {
+    if(this.props.userName == this.state.players[this.state.turn].name
+      && this.drawing) {
 
       const stage = this.stage.getStage();
       const point = stage.getPointerPosition();
@@ -101,9 +118,9 @@ class GameTable extends React.Component {
         x: start.x,
         y : start.y,
         key: "currentUserLine" + Math.random(),
-        strokeWidth:20,
+
         points : [0, 0, point.x - start.x, point.y - start.y],
-        stroke : "red"
+        stroke : this.state.players[this.state.turn].color
       }
       let startCpy = _.cloneDeep(this.state);
       startCpy.currentUserLine = currentUserLine;
@@ -114,11 +131,50 @@ class GameTable extends React.Component {
 
 
   render() {
-    let gridLength = 5;
-    let gridBreadth = 5;
-    let x = 200;
-    let y = 50;
+    let gridLength = this.state.dimensions.length;
+    let gridBreadth = this.state.dimensions.breadth;
+    let x = 0;
+    let y = 0;
     let grid = [];
+    let drawnLines = [];
+    let boxes = [];
+    for(var i = 0; i < this.state.linesDrawn.length ; i++) {
+      drawnLines.push(<Line
+        x = {(this.scale * this.state.linesDrawn[i].x1) + this.initX}
+        y = {(this.scale * this.state.linesDrawn[i].y1) + this.initY}
+        key = {this.state.linesDrawn[i].x1 + "" +
+          this.state.linesDrawn[i].y1 + "" +
+          this.state.linesDrawn[i].x2 + "" +
+          this.state.linesDrawn[i].y2}
+        points = {[0, 0, this.scale * (this.state.linesDrawn[i].x2
+          - this.state.linesDrawn[i].x1), this.scale * (this.state.linesDrawn[i].y2
+          - this.state.linesDrawn[i].y1)]}
+        stroke = "black"
+        >
+      </Line>
+    );
+    }
+
+    for(var i = 0; i < this.state.players.length; i++) {
+      for(var j = 0; j < this.state.players[i].boxesAcquired.length; j++) {
+          let box =  this.state.players[i].boxesAcquired[j];
+          boxes.push(<Line
+            x={(this.scale * box.x1) + this.initX}
+            y={(this.scale * box.y1) + this.initY}
+            key= {"box" + box.x1 + "" + box.x2 + "" + box.y1 + "" + box.y2}
+            points={[0, 0, this.scale * (box.x2 - box.x1), 0,
+              this.scale * (box.x2 - box.x1),
+              this.scale * (box.y2 - box.y1), 0,
+              this.scale * (box.y2 - box.y1)]}
+            closed
+            stroke="black"
+            fill = {this.state.players[i].color}
+          />);
+      }
+    }
+
+    console.log(boxes);
+    console.log(drawnLines);
 
     // grid.push(
     //   <Rect
@@ -130,25 +186,34 @@ class GameTable extends React.Component {
     //     fill="pink">
     //   </Rect>
     // );
-    for(var i = 0; i <= gridLength; i++) {
-      x = 200;
-      for (var j = 0; j <= gridBreadth; j++) {
+    for(var i = 0; i < gridLength; i++) {
+      for (var j = 0; j < gridBreadth; j++) {
         grid.push(
           <Circle
-            x = {x}
-            y = {y}
+            x = {this.initX + (i)*100}
+            y = {this.initY + (j)*100}
             name = {"circle"+ i + "" + j}
             key={(i)+ ""+ (j)}
-            radius = {20}
+            radius = {10}
             fill="#ddd">
           </Circle>
         );
-        x += 100;
+        x += 1;
       }
-      y += 100;
+      y += 1;
     }
+    let currentLine = null;
+    if('currentUserLine' in this.state) {
+      currentLine = <Line
+        x = {this.state.currentUserLine.x}
+        y = {this.state.currentUserLine.y}
+        key = {this.state.currentUserLine.key}
+        points = {this.state.currentUserLine.points}
+        stroke = {this.state.currentUserLine.stroke}
 
-
+        >
+      </Line>
+    }
 
     return (
 
@@ -165,30 +230,30 @@ class GameTable extends React.Component {
         }>
         <Layer>
           <Portal>
-            <div className="turn"><h2>Score:</h2>
-              <h2>Turn: {this.state.players[this.state.turn].name}</h2>
+            <div className="turn">
+              <div className="row">
+                <div className="column">Name:</div>
+                <div className="column">Color:</div>
+                <div className="column">Score:</div>
+                </div>
+
+                {this.state.players.map(item => (
+                  <div key={item.name + item.color} className="info">
+                    <div key={"row" + item.name + item.color} className="row">
+                      <div key={item.name} className="column">{item.name}</div>
+                      <div key={item.color} className="column">{item.color}</div>
+                      <div key={item.score} className="column">{item.score}</div>
+                    </div>
+                  </div>
+
+            ))}
+
+              <div>Turn: {this.state.players[this.state.turn].name}</div>
             </div>
           </Portal>
-          <Line
-            x = {this.state.currentUserLine.x}
-            y = {this.state.currentUserLine.y}
-            key = {this.state.currentUserLine.key}
-            points = {this.state.currentUserLine.points}
-            stroke = {this.state.currentUserLine.stroke}
-            strokeWidth = {20}
-            >
-          </Line>
-          {this.state.linesDrawn.map(item => (
-            <Line
-              x= {item.x}
-              y={item.y}
-              key={item.key}
-              points = {item.points}
-              stroke = "black"
-              strokeWidth={20}
-              >
-            </Line>
-          ))}
+          {currentLine}
+          {drawnLines}
+          {boxes}
           {grid}
 
 
