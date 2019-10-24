@@ -13,6 +13,9 @@ class GameTable extends React.Component {
     this.initX = 200;
     this.initY = 50;
     this.scale = 100
+    console.log(props.userName)
+    console.log(props.tableName)
+    this.channel = props.channel;
     this.state = {
       gameName:"game1",
       ownerId:"User1",
@@ -49,6 +52,16 @@ class GameTable extends React.Component {
     ]
     };
 
+    this.channel
+        .join()
+        .receive("ok", this.got_view.bind(this))
+        .receive("error", resp => { console.log("Unable to join", resp); });
+
+  }
+
+  got_view(view) {
+    console.log("new view", view);
+    this.setState(view.game);
   }
 
   handleMouseDown() {

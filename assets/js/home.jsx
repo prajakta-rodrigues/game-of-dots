@@ -4,9 +4,10 @@ import _ from 'lodash';
 import logo from "../images/boxes.jpg";
 import question from "../images/question.png";
 import GameTable from "./game-table";
+import Tables from "./search-table";
 
-export default function home_init(root, channel) {
-    ReactDOM.render(<Home channel={channel}/>, root);
+export default function home_init(root) {
+    ReactDOM.render(<Home/>, root);
   }
 
 class Popup extends React.Component {
@@ -30,13 +31,26 @@ class Popup extends React.Component {
 
 class Home extends React.Component {
     constructor(props) {
-        super(props);
+      super(props);
+      // this.channel = props.channel;
+      // this.channel.join()
+      //   .receive("ok", this.got_view.bind(this))
+      //   .receive("error", resp => {
+      //   console.log("Unable to join, failed", resp);
+      // });
+
         this.state = {
             showPopup: false,
             loggedIn: false,
             userName: ""
         };
+        
     }
+
+    // got_view(view) {
+    //   console.log("new view", view);
+    //   this.setState(view.game);
+    // }
 
     togglePopup() {
         this.setState({
@@ -53,7 +67,7 @@ class Home extends React.Component {
       })
     }
 
-    userNameChanged() {
+    userNameChanged(event) {
       let stateCpy = _.cloneDeep(this.state);
       stateCpy.userName = event.target.value;
       this.setState(stateCpy);
@@ -68,7 +82,7 @@ class Home extends React.Component {
         let labelname = <label htmlFor="username">User name:</label>
         let textbox = <input type="text" id="username"
           value ={this.state.userName}
-          onChange= {this.userNameChanged.bind(this)}></input>
+          onChange= {(event) => this.userNameChanged(event)}></input>
         let labelpass = <label htmlFor="password">Password:</label>
         let password = <input type="password" id="password" name="password"></input>
         let button = <div className="column">
@@ -104,7 +118,8 @@ class Home extends React.Component {
           </div>
         }
         else {
-          return <GameTable userName = {this.state.userName}></GameTable>
+          //return <GameTable userName = {this.state.userName}></GameTable>
+          return <Tables userName = {this.state.userName}></Tables>
         }
 
     }
