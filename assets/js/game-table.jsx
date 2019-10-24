@@ -227,15 +227,24 @@ class GameTable extends React.Component {
         <Layer>
           <Portal>
             <div className="turn">
+              <div className="row">
+                <div className="column">Name:</div>
+                <div className="column">Color:</div>
+                <div className="column">Score:</div>
+                </div>
+
                 {this.state.players.map(item => (
                   <div key={item.name + item.color} className="info">
-                    <h3 key={item.name}>Name: {item.name}</h3>
-                      <h3 key={item.color}>Color: {item.color}</h3>
-                      <h3 key={item.score}>Score: {item.score}</h3>
+                    <div key={"row" + item.name + item.color} className="row">
+                      <div key={item.name} className="column">{item.name}</div>
+                      <div key={item.color} className="column">{item.color}</div>
+                      <div key={item.score} className="column">{item.score}</div>
+                    </div>
                   </div>
 
             ))}
-              <h2>Turn: {this.state.players[this.state.turn].name}</h2>
+
+              <div>Turn: {this.state.players[this.state.turn].name}</div>
             </div>
           </Portal>
           {currentLine}

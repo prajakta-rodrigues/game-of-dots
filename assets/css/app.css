@@ -2,6 +2,7 @@
 
 @import "~milligram/dist/milligram";
 
+
 .column > p {
     padding-top: 10ex;
     text-align: center;
@@ -10,6 +11,11 @@
 .home {
     text-align: center;
 }
+
+ body {
+   background-color:darkslateblue;
+  color: white
+   }
 
 .popup {
     position: fixed;
@@ -32,3 +38,14 @@
     background: white;
   }
 
+  button {
+    background-color: antiquewhite;
+    color: darkslateblue;
+  }
+
+  input[type='email'], input[type='number'],
+  input[type='password'], input[type='search'],
+  input[type='tel'], input[type='text'],
+  input[type='url'], textarea, select  {
+    background-color: white;
+  }

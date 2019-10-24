@@ -6,6 +6,7 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "bootstrap-css-only": "^4.3.1",
     "jquery": "^3.4.1",
     "konva": "^4.0.15",
     "lodash": "^4.17.15",
