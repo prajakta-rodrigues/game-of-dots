@@ -23,7 +23,20 @@ class Tables extends React.Component {
             tableName: '',
             joinGame: false
         };
+
+        let channel = socket.channel('login:Admin', {});
+        this.channel = channel;
+        console.log("login:Admin");
+        this.channel
+        .join()
+        .receive("ok", this.got_view.bind(this))
+        .receive("error", resp => { console.log("Unable to join", resp); });
     }
+
+    got_view(view) {
+        console.log("new view connected to login", view);
+        this.setState(view.game);
+      }
 
     setModalShow(value) {
         this.setState({
@@ -37,12 +50,20 @@ class Tables extends React.Component {
         });
     }
 
+    // addTable() {
+    //     let stateCpy = _.cloneDeep(this.state);
+    //     let tables = this.state.tables;
+    //     let new_tables = tables.concat(this.state.tableName);
+    //     stateCpy.tables = new_tables
+    //     this.setState(stateCpy);
+    //     this.togglePopup();
+    //     this.joinTable(this.state.tableName);
+    // }
+
     addTable() {
-        let stateCpy = _.cloneDeep(this.state);
-        let tables = this.state.tables;
-        let new_tables = tables.concat(this.state.tableName);
-        stateCpy.tables = new_tables
-        this.setState(stateCpy);
+        let table = {name: this.state.tableName,
+                    owner: this.state.userName};
+        this.channel.push("add_table", {table: table}).receive("ok", this.got_view.bind(this));
         this.togglePopup();
         this.joinTable(this.state.tableName);
     }
@@ -62,11 +83,14 @@ class Tables extends React.Component {
         let rows = [];
     let tables = this.state.tables;
     let index = 0;
+    console.log("table length");
+    console.log(tables.length);
+    console.log(tables);
     for(let i = 0; i < tables.length; i++) {
         let cols = []
         for(let j = 0; j < 3; j++) {
             if(index < tables.length) {
-                let tableName = this.state.tables[index];
+                let tableName = this.state.tables[index].name;
             let col = <div className="column">
             <div className="product-grid3">
                 <div className="product-image3">
@@ -129,7 +153,6 @@ class Tables extends React.Component {
         
             )
         }else {
-            //check if the table is already present if yes then pass its owner otherwise pass userName as owner
             let attributes = {tableName: this.state.tableName, userName: this.state.userName};
             let channel = socket.channel("games:" + this.state.tableName, attributes);
             return <GameTable userName = {this.state.userName} tableName = {this.state.tableName} channel = {channel}></GameTable>
