@@ -14,6 +14,10 @@ class GameTable extends React.Component {
     this.initY = 50;
     this.scale = 100
     this.state = {
+      gameName:"game1",
+      ownerId:"User1",
+      gameStarted: false,
+      gameOver: false,
       type:"square",
       dimensions: {
         length: 5,
