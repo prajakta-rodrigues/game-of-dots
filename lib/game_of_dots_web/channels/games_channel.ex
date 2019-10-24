@@ -1,12 +1,14 @@
 defmodule GameOfDotsWeb.GamesChannel do
   use GameOfDotsWeb, :channel
-
   alias GameOfDots.Game
   alias GameOfDots.BackupAgent
 
   def join("games:" <> name, payload, socket) do
+    IO.inspect(payload)
     if authorized?(payload) do
-      game = BackupAgent.get(name) || Game.new()
+      table_name = Map.get(payload, "tableName")
+      user_name = Map.get(payload, "userName")
+      game = BackupAgent.get(name) || Game.new(table_name, user_name)
       BackupAgent.put(name, game)
       socket = socket
       |> assign(:game, game)

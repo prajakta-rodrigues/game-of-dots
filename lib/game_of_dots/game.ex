@@ -1,10 +1,10 @@
 defmodule GameOfDots.Game do
 
-  def new(type, dimensions, playerNames, owner, name) do
+  def new(table_name, user_name) do
     %{
       type: "square",
-      gameName:"game1",
-      ownerId:"User1",
+      tableName: table_name,
+      ownerId: "User1",
       gameStarted: false,
       gameOver: false,
       dimensions: %{
@@ -14,15 +14,16 @@ defmodule GameOfDots.Game do
       linesDrawn: [],
       validLinesRemaining: [],
       turn: 0,
-      players: []
+      players: [],
+      tables: [],
+      audience: []
     }
   end
 
 
   def client_view(game) do
     %{
-
-
+      # game
     }
   end
 
@@ -30,4 +31,10 @@ defmodule GameOfDots.Game do
 
   end
 
+  def create_table(game, table_name, owner) do 
+    tables = Map.get(game, :tables)
+    new_table = [%{:table_name => table_name, :owner => owner}]
+    updated_tables = tables ++ new_table
+    game = %{game | tables: updated_tables}
+  end
 end

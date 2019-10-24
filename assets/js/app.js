@@ -19,10 +19,16 @@ import socket from "./socket"
 
 import home_init from "./home";
 
+// $(() => {
+//   let root = document.getElementById('root');
+//   if (root) {
+//     let channel = socket.channel("games:" + window.gameName, {});
+//     home_init(root, channel);
+//   }
+// });
 $(() => {
   let root = document.getElementById('root');
-  if (root) {
-    let channel = socket.channel("games:" + window.gameName, {});
-    home_init(root, channel);
+  if(root) {
+    home_init(root);
   }
 });
