@@ -32,7 +32,7 @@ defmodule GameOfDotsWeb.LoginChannel do
       BackupAgent.put(name, game)
       {:reply, {:ok, %{ "game" => Login.client_view(game)}}, socket}
     end
-    
+
     # Add authorization logic here as required.
     defp authorized?(_payload) do
         true

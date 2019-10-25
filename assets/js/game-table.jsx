@@ -231,7 +231,7 @@ class GameTable extends React.Component {
     return (
 
       <Stage
-        width={window.innerWidth}
+        width={window.innerWidth - 300}
         height={window.innerHeight}
         onContentMouseDown={this.handleMouseDown.bind(this)}
         onContentMouseUp={this.handleMouseUp.bind(this)}
