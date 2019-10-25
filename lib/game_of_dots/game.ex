@@ -1,7 +1,7 @@
 defmodule GameOfDots.Game do
 
-  def new(table_name, user_name, length, breadth) do
-    game = %{
+  def new(table_name, user_name, length, breadth, capacity) do
+    game =%{
       type: "square",
       tableName: table_name,
       ownerId: user_name,
@@ -15,7 +15,8 @@ defmodule GameOfDots.Game do
         validLinesRemaining: [],
         turn: 0,
         players: [],
-        audience: []
+        audience: [],
+        capacity: capacity - 1
       }
       hm = generateValidLines(2, 2);
       IO.inspect(hm);

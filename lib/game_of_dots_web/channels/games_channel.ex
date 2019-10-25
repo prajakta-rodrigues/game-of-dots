@@ -11,9 +11,10 @@ defmodule GameOfDotsWeb.GamesChannel do
       length = Map.get(payload, "length")
       breadth = Map.get(payload, "breadth")
       create_table = Map.get(payload, "createTable")
+      capacity = Map.get(payload, "capacity")
       IO.puts("create table")
       IO.inspect(create_table)
-      game = BackupAgent.get(name) || Game.new(table_name, user_name, length, breadth)
+      game = BackupAgent.get(name) || Game.new(table_name, user_name, length, breadth, capacity)
       if create_table == false do
         players = game.players
         IO.inspect(players)
