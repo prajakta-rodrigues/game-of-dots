@@ -21,11 +21,18 @@ defmodule GameOfDots.Login do
       tables = Map.get(game, :tables)
       table = Enum.filter(tables, fn(x) -> x["name"] == table_name end)
       val = List.first(table)
+      IO.puts("value inspect")
+      IO.inspect(val)
       players = val["players"]
+
+      capacity = val["capacity"]
+      new_capacity = capacity - 1
       new_players = players ++ [player_name]
       new_val = %{val | "players" => new_players}
+      IO.inspect(new_val)
+      new_capacity = %{new_val | "capacity" => new_capacity}
       new_tables = Enum.map(tables, fn (table) -> if (table["name"] == table_name) do 
-        table = new_val 
+        table = new_capacity 
       else table = table  end end)  
       game = %{game | tables: new_tables}
     end
