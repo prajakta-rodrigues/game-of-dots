@@ -17,12 +17,13 @@ defmodule GameOfDotsWeb.GamesChannel do
       if create_table == false do
         players = game.players
         IO.inspect(players)
-        new_players = players ++ [user_name]
-        IO.inspect(new_players)
-        game = %{game | players: new_players} 
+        game = Game.add_player(game, user_name)
         IO.inspect(game)
+        BackupAgent.put(name, game)
+      else
+        BackupAgent.put(name, game)
       end
-      BackupAgent.put(name, game)
+      game = BackupAgent.get(name)
       socket = socket
       |> assign(:game, game)
       |> assign(:name, name)

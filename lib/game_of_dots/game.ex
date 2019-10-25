@@ -1,7 +1,7 @@
 defmodule GameOfDots.Game do
 
   def new(table_name, user_name, length, breadth) do
-    %{
+    game = %{
       type: "square",
       tableName: table_name,
       ownerId: user_name,
@@ -17,12 +17,16 @@ defmodule GameOfDots.Game do
         players: [],
         audience: []
       }
+      hm = generateValidLines(2, 2);
+      IO.inspect(hm);
+      game = add_player(game, user_name)
+      game
     end
 
     def generateValidLines(length, breadth) do
       validLines = [];
-      validLines = generateValidHorizontalLines(length - 1, breadth - 1, []);
-      validLines = generateVerticalLines(breadth - 1, length - 1, validLines);
+      # validLines = generateValidHorizontalLines(length - 1, breadth - 1, []);
+      # validLines = generateVerticalLines(breadth - 1, length - 1, validLines);
       validLines
     end
 
@@ -128,4 +132,24 @@ defmodule GameOfDots.Game do
     updated_tables = tables ++ new_table
     game = %{game | tables: updated_tables}
   end
+
+  def add_player(game, user_name) do
+    newPlayer = %{
+        name: user_name,
+        color: new_color(length(game.players)),
+        score: 0,
+        boxesAcquired: [
+        ]
+      }
+    players = game.players ++ [newPlayer]
+    game = Map.put(game, :players, players)
+    game
+  end
+
+  def new_color(player_no) do
+    colors = ~w(fcba03 acba09 fc5a03 84fc03 03dbfc 0394fc)
+    {:ok, color} = Enum.fetch(colors, player_no)
+    color
+  end
+
 end
