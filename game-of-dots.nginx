@@ -2,7 +2,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name gameofdots.prajaktarodrigues.website;
+    server_name gameofdots.sukhadakhatu.space;
 
     location / {
         proxy_pass http://localhost:3222;
