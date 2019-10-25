@@ -15,7 +15,7 @@ config :gameofdots, GameOfDotsWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   root: ".",
   version: Application.spec(:phoenix_distillery, :vsn),
-  url: [host: "gameofdots.prajaktarodrigues.website", port: 80]
+  url: [host: "gameofdots.sukhadakhatu.space", port: 80]
 
 
 # Do not print debug messages in production
