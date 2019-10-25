@@ -1,6 +1,6 @@
 defmodule GameOfDots.Game do
 
-  def new(table_name, user_name) do
+  def new(table_name, user_name, length, breadth) do
     %{
       type: "square",
       tableName: table_name,
@@ -8,13 +8,13 @@ defmodule GameOfDots.Game do
       gameStarted: false,
       gameOver: false,
       dimensions: %{
-        length: 5,
-        breadth: 5
+        length: length,
+        breadth: breadth
       },
       linesDrawn: [],
       validLinesRemaining: [],
       turn: 0,
-      players: [],
+      players: [user_name],
       tables: [],
       audience: []
     }
@@ -22,9 +22,7 @@ defmodule GameOfDots.Game do
 
 
   def client_view(game) do
-    %{
-      # game
-    }
+    game
   end
 
   def draw(game, coords, userName) do

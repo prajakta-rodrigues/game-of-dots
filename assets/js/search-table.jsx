@@ -15,13 +15,16 @@ class Tables extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tables : ["table 1", "current table", "pacman", "drug lord", "king of the world", "get a table already","one more table", "table no 21"],
+            tables : [],
             showPopup: false,
             show: false,
             modalShow: false,
             userName: props.userName,
             tableName: '',
-            joinGame: false
+            length: 3,
+            breadth: 3,
+            joinGame: false,
+            createTable: false
         };
 
         let channel = socket.channel('login:Admin', {});
@@ -60,22 +63,71 @@ class Tables extends React.Component {
     //     this.joinTable(this.state.tableName);
     // }
 
-    addTable() {
+    addtable() {
+        let stateCpy = _.cloneDeep(this.state);
+        stateCpy.createTable = true
+        this.setState(stateCpy);
         let table = {name: this.state.tableName,
-                    owner: this.state.userName};
+                    owner: this.state.userName,
+                    length: this.state.length,
+                    breadth: this.state.breadth,
+                    players: [this.state.userName]};
         this.channel.push("add_table", {table: table}).receive("ok", this.got_view.bind(this));
         this.togglePopup();
-        this.joinTable(this.state.tableName);
+        this.joinTable(this.state.tableName, true);
     }
 
-    joinTable(tableName) {
+    joinTable(tableName, createTable) {
         this.setState({joinGame: true,
                         tableName: tableName});
+        
+        console.log("check create table val");
+        console.log(createTable);
+
+        if(createTable == false) {
+            this.channel.push("join_table", {table_name: tableName, player_name: this.state.userName}).
+            receive("ok", this.got_view.bind(this));
+        }
+        
     }
 
     getTableName(e) {
         let tabName = e.target.value;
         this.setState({tableName: tabName})
+    }
+
+    getDimensions(e) {
+        let dimensions = e.target.value;
+        let length = 3;
+        let breadth = 3;
+        console.log("get dimensions");
+        console.log(dimensions)
+        if(dimensions == "4*4") {
+            length = 4;
+            breadth = 4;
+        } else if(dimensions == "5*5") {
+            length = 5;
+            breadth = 5;
+        } else if(dimensions == "6*6") {
+            length = 6;
+            breadth = 6;
+        } else if(dimensions == "7*7") {
+            length = 7;
+            breadth = 7;
+        } else if(dimensions == "8*8") {
+            length = 8;
+            breadth = 8;
+        } else if(dimensions == "9*9") {
+            length = 9;
+            breadth = 9;
+        } else if(dimensions == "10*10") {
+            length = 10;
+            breadth = 10;
+        }
+        this.setState({
+            length: length,
+            breadth: breadth
+        });
     }
 
     render() {
@@ -103,7 +155,7 @@ class Tables extends React.Component {
                 <div className="product-content">
                     <h3 className="title"><a href="#">{tableName}</a></h3>
                     <div className="price">
-                        <button onClick={() => this.joinTable(tableName)}>Join</button>
+                        <button onClick={() => this.joinTable(tableName, false)}>Join</button>
                     </div>
                 </div>
             </div>
@@ -118,19 +170,18 @@ class Tables extends React.Component {
         rows.push(<div className="row">{cols}</div>);
     }
 
-    //const [modalShow, setModalShow] = React.useState(false);
-
     let addSign = <a onClick={() => this.togglePopup()}><img src={plus}
           alt={'add sign'}/></a>
             return (
                 <div>
                 <div className='container'>
                 {this.state.showPopup ?
-                <MyVerticallyCenteredModal
-                addTable={(e) => this.addTable(e)}
+                <CreateTable
                 show={this.state.showPopup}
                 onHide={() => this.togglePopup()}
+                addtable={(e) => this.addtable(e)}
                 getTableName={(e) => this.getTableName(e)}
+                getDimensions={(e) => this.getDimensions(e)}
        />
               : null
               }
@@ -153,35 +204,45 @@ class Tables extends React.Component {
         
             )
         }else {
-            let attributes = {tableName: this.state.tableName, userName: this.state.userName};
+            let attributes = {tablename: this.state.tableName, username: this.state.userName, length: this.state.length,
+            breadth: this.state.breadth, createTable: this.state.createTable};
             let channel = socket.channel("games:" + this.state.tableName, attributes);
-            return <GameTable userName = {this.state.userName} tableName = {this.state.tableName} channel = {channel}></GameTable>
+            return <GameTable userName = {this.state.userName} 
+            tableName = {this.state.tableName}
+            channel = {channel}></GameTable>
         }
     }
 }
 
-function MyVerticallyCenteredModal(props) {
+function CreateTable(props) {
     
       return (
-        <Modal
-          {...props}
-        >
+        <Modal {...props}>
           <Modal.Header>
             <Modal.Title>
               Create a Table
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <form onSubmit={props.addTable}>
+            <form>
                 <label>
-                    Table Name:
-                    <input type="text" onChange={props.getTableName}></input> 
+                    Table Name: 
                 </label>
+                <input type="text" onChange={props.getTableName}></input>
                 <label>
-                    Capacity:
-                    <input type="text" name="capacity"></input>
+                    Table Size:
                 </label>
-                <input type="submit" value="submit"></input>
+                <select onChange={props.getDimensions}>
+                    <option value="3*3">3*3</option>
+                    <option value="4*4">4*4</option>
+                    <option value="5*5">5*5</option>
+                    <option value="6*6">6*6</option>
+                    <option value="7*7">7*7</option>
+                    <option value="8*8">8*8</option>
+                    <option value="9*9">9*9</option>
+                    <option value="10*10">10*10</option>
+                </select>
+                <input type="submit" value="submit" onClick = {props.addtable}></input>
             </form>
           </Modal.Body>
           <Modal.Footer>
