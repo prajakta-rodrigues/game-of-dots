@@ -12,7 +12,7 @@ defmodule GameOfDots.Game do
         breadth: length
         },
         linesDrawn: [],
-        validLinesRemaining: generateValidLines(5, 5),
+        validLinesRemaining: [],
         turn: 0,
         players: [],
         audience: []
@@ -64,19 +64,20 @@ defmodule GameOfDots.Game do
 
 
     def client_view(game) do
-      %{
-        type: game.type,
-        tableName: game.table_name,
-        ownerId: game.user_name,
-        gameStarted: game.gameStarted,
-        gameOver: game.gameOver,
-        dimensions: game.dimensions,
-        linesDrawn: game.linesDrawn,
-        validLinesRemaining: game.validLinesRemaining,
-        turn: game.turn,
-        players: game.players,
-        audience: game.audience
-      }
+      game
+      # %{
+      #   type: game.type,
+      #   tableName: game.table_name,
+      #   ownerId: game.user_name,
+      #   gameStarted: game.gameStarted,
+      #   gameOver: game.gameOver,
+      #   dimensions: game.dimensions,
+      #   linesDrawn: game.linesDrawn,
+      #   validLinesRemaining: game.validLinesRemaining,
+      #   turn: game.turn,
+      #   players: game.players,
+      #   audience: game.audience
+      # }
     end
 
     def draw(game, coords, userName) do
