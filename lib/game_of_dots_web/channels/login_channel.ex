@@ -18,13 +18,19 @@ defmodule GameOfDotsWeb.LoginChannel do
       end
 
     def handle_in("add_table", %{"table" => table}, socket) do
-        IO.puts("inside the server code")
-        IO.inspect(table)
         name = socket.assigns[:name]
         game = Login.add_table(socket.assigns[:game], table)
         socket = assign(socket, :game, game)
         BackupAgent.put(name, game)
         {:reply, {:ok, %{ "game" => Login.client_view(game)}}, socket}
+    end
+
+    def handle_in("join_table", %{"table_name" => table_name, "player_name" => player_name}, socket) do
+      name = socket.assigns[:name]
+      game = Login.join_table(socket.assigns[:game], table_name, player_name)
+      socket = assign(socket, :game, game)
+      BackupAgent.put(name, game)
+      {:reply, {:ok, %{ "game" => Login.client_view(game)}}, socket}
     end
     
     # Add authorization logic here as required.
