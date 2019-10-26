@@ -19,3 +19,14 @@
   width: 33.33%;
   font-size: 2rem;
 }
+
+.chat-box {
+  right: 0;
+  position: absolute;
+  bottom:0;
+}
+
+.chat-header {
+  background-color: beige;
+  color:darkslateblue;
+}
