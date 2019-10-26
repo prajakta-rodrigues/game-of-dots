@@ -160,3 +160,9 @@ wasn’t something we had done before. Since we did not have routing we had to
 pass states which was a challenge. Communication between different components 
 was a challenge where we communicated between parent and child components 
 using callback functions.
+
+## Citation
+
+https://hexdocs.pm/phoenix/Phoenix.Channel.html
+http://www.ccs.neu.edu/home/ntuck/courses/2019/09/cs5610/notes/
+https://github.com/NatTuck/memory
