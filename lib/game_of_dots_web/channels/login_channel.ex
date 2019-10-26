@@ -16,13 +16,15 @@ defmodule GameOfDotsWeb.LoginChannel do
           {:error, %{reason: "unauthorized"}}
         end
       end
-
+    
     def handle_in("add_table", %{"table" => table}, socket) do
         name = socket.assigns[:name]
         game = Login.add_table(socket.assigns[:game], table)
         socket = assign(socket, :game, game)
         BackupAgent.put(name, game)
-        {:reply, {:ok, %{ "game" => Login.client_view(game)}}, socket}
+        broadcast! socket, "addtab", %{"game" => Login.client_view(game)}
+        {:noreply, socket}
+        # {:reply, {:ok, %{ "game" => Login.client_view(game)}}, socket}
     end
 
     def handle_in("join_table", %{"table_name" => table_name, "player_name" => player_name}, socket) do
@@ -30,7 +32,9 @@ defmodule GameOfDotsWeb.LoginChannel do
       game = Login.join_table(socket.assigns[:game], table_name, player_name)
       socket = assign(socket, :game, game)
       BackupAgent.put(name, game)
-      {:reply, {:ok, %{ "game" => Login.client_view(game)}}, socket}
+      broadcast! socket, "jointab", %{"game" => Login.client_view(game)}
+      {:noreply, socket}
+      # {:reply, {:ok, %{ "game" => Login.client_view(game)}}, socket}
     end
 
     # Add authorization logic here as required.
