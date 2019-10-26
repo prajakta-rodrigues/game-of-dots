@@ -35,6 +35,18 @@ class Tables extends React.Component {
         .join()
         .receive("ok", this.got_view.bind(this))
         .receive("error", resp => { console.log("Unable to join", resp); });
+
+        this.channel.on("addtab",payload=>
+        {let game = payload.game;
+          console.log("broadcast!!!!!!!!!!");
+          this.setState(game);
+        });
+
+        this.channel.on("jointab",payload=>
+        {let game = payload.game;
+          console.log("broadcast!!!!!!!!!!");
+          this.setState(game);
+        });
     }
 
     got_view(view) {
@@ -67,6 +79,8 @@ class Tables extends React.Component {
         this.setState({
             filtered : newList
         });
+        console.log("handle");
+        console.log(this.state.filtered);
     }
 
     addtable() {
@@ -161,15 +175,27 @@ class Tables extends React.Component {
     let tables = this.state.tables;
     let filtered = this.state.filtered;
     if(this.state.filtered.length == 0) {
-        filtered = tables;
+        // let nameList = this.state.tables.map(item => item.name);
+        filtered = tables.map(item => item.name);
     }
+    console.log("jekwhfliwr");
+    console.log(filtered);
     let index = 0;
     for(let i = 0; i < filtered.length; i++) {
         let cols = []
         for(let j = 0; j < 3; j++) {
             if(index < filtered.length) {
-                let tableName = this.state.tables[index].name;
-                let capacity = this.state.tables[index].capacity;
+                console.log(filtered);
+                let table = tables.filter(table => table.name == filtered[index]);
+                console.log("tatatatat");
+                console.log(table);
+                let tableName = table[0].name;
+                console.log(tableName);
+                let capacity = table[0].capacity;
+                let players = table[0].players;
+                console.log("plae check");
+                console.log(players);
+                let containsPlayer = players.includes(this.state.userName);
             let col = <div className="column" key={tableName}>
             <div className="product-grid3" key={tableName + "grid3"}>
                 <div className="product-image3" key={tableName + "img3"}>
@@ -183,7 +209,7 @@ class Tables extends React.Component {
                     <h3 className="title" key={tableName + "til"}><a href="#" key={tableName + "anc1"}>{tableName}</a> 
                     <a href="#" key={tableName + "anc2"}>Capacity: {capacity}</a></h3>
                     <div className="price" key={tableName + "price"}>
-                        {capacity == 0? <button onClick={() => this.joinTable(tableName, false)} key={tableName + "dis"} disabled>Join</button>
+                        {capacity == 0 && !containsPlayer? <button onClick={() => this.joinTable(tableName, false)} key={tableName + "dis"} disabled>Join</button>
                         : <button onClick={() => this.joinTable(tableName, false)} key={tableName + "but"}>Join</button>}
                         <button onClick={() => this.watchGame()} key={tableName + "watch"}>Watch</button>
                     </div>
