@@ -10,6 +10,7 @@ Sukhada Khatu Prajakta Rodrigues
 
 2. What's the URL of the github repo with your code for this project?
 https://github.com/SukhadaKhatu/game-of-dots
+https://github.com/prajakta-rodrigues/game-of-dots
 
 
 3. What is the URL(s) that you deployed to?
