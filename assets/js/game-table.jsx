@@ -17,8 +17,8 @@ class GameTable extends React.Component {
     console.log(props.tableName)
     this.channel = props.channel;
     this.state = {
-      gameName:"game1",
       ownerId:"User1",
+      tableName:"",
       gameStarted: false,
       gameOver: false,
       type:"square",
@@ -87,16 +87,26 @@ class GameTable extends React.Component {
     console.log((start.y - this.initY)/ this.scale);
     if(isDotCheck.test(start.name) &&
     isDotCheck.test(end.name)) {
-      if((start.x == end.x && Math.abs(start.y - end.y) == this.scale)
-      || (start.y == end.y && Math.abs(start.x - end.x) == this.scale)) {
+      let now = {
+        x1: (start.x - this.initX)/ this.scale ,
+        y1: (start.y - this.initY)/ this.scale,
+        x2: (end.x - this.initX) / this.scale,
+        y2: (end.y - this.initY) / this.scale
+      }
+
+      if(this.containsObject(now, this.state.validLinesRemaining)) {
+        console.log("Seeeeeeeee tisss add meee");
         let stateCpy = _.cloneDeep(this.state);
-        stateCpy.linesDrawn.push({
-          x1: (start.x - this.initX)/ this.scale ,
-          y1: (start.y - this.initY)/ this.scale,
-          x2: (end.x - this.initX) / this.scale,
-          y2: (end.y - this.initY) / this.scale
-        }
-        );
+        // stateCpy.linesDrawn.push({
+        //   x1: (start.x - this.initX)/ this.scale ,
+        //   y1: (start.y - this.initY)/ this.scale,
+        //   x2: (end.x - this.initX) / this.scale,
+        //   y2: (end.y - this.initY) / this.scale
+        // }
+        // );
+        this.channel.push("draw", {input: now,
+          name:this.state.tableName, user:this.props.userName})
+          .receive("ok", this.got_view.bind(this));
         console.log(stateCpy.linesDrawn[1]);
         console.log(stateCpy.linesDrawn[0]);
         stateCpy.turn = (stateCpy.turn + 1) % stateCpy.players.length;
@@ -117,6 +127,22 @@ class GameTable extends React.Component {
     startCpy.currentUserLine = currentUserLine;
     this.setState(startCpy);
   }
+  }
+
+  containsObject(object, list) {
+      var i;
+      console.log("hereee");
+      console.log(object);
+      console.log(list);
+      console.log("hereee");
+      for (i = 0; i < list.length; i++) {
+          if (list[i].x1 == object.x1 && list[i].x2 == object.x2
+            && list[i].y1 == object.y1 && list[i].y2 == object.y2) {
+              return true;
+          }
+      }
+
+      return false;
   }
 
   handleMouseMove() {
@@ -142,6 +168,12 @@ class GameTable extends React.Component {
 
   }
 
+startGame() {
+  console.log("game started");
+  this.channel.push("start-game", {name:this.state.tableName,
+    user:this.props.userName})
+    .receive("ok", this.got_view.bind(this));
+}
 
   render() {
     let gridLength = this.state.dimensions.length;
@@ -262,6 +294,9 @@ class GameTable extends React.Component {
             ))}
 
               <div>Turn: {this.state.players[this.state.turn].name}</div>
+              {this.state.gameStarted || this.state.ownerId
+                != this.props.userName ? null:
+                <button onClick={this.startGame.bind(this)}>Start game</button>}
             </div>
           </Portal>
           {currentLine}
