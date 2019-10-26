@@ -302,7 +302,6 @@ resetGame() {
         key = {this.state.currentUserLine.key}
         points = {this.state.currentUserLine.points}
         stroke = {this.state.currentUserLine.stroke}
-
         >
       </Line>
     }
@@ -349,7 +348,7 @@ resetGame() {
                   onClick={this.resetGame.bind(this)}>Reset Game</button>:null}
 
             </div>
-            <div>{winners}</div>
+            {this.state.gameOver? <div>{winners}</div> : null}
             <div className= "chat-box">
               <div className= "chat-header">Chat Now</div>
               <div className="chat-body">
