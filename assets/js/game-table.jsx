@@ -310,7 +310,7 @@ resetGame() {
 
       <Stage
         width={window.innerWidth - 300}
-        height={window.innerHeight}
+        height={300}
         onContentMouseDown={this.handleMouseDown.bind(this)}
         onContentMouseUp={this.handleMouseUp.bind(this)}
         onContentMouseMove = {this.handleMouseMove.bind(this)}
