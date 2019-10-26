@@ -163,6 +163,6 @@ using callback functions.
 
 ## Citation
 
-https://github.com/NatTuck/memory
+1. https://github.com/NatTuck/memory
 
-https://hexdocs.pm/phoenix/Phoenix.Channel.html
+2. https://hexdocs.pm/phoenix/Phoenix.Channel.html
