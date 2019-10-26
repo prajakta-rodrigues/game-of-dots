@@ -13,40 +13,50 @@ defmodule GameOfDotsWeb.GamesChannel do
       capacity = Map.get(payload, "capacity")
       watch_table = Map.get(payload, "watchGame")
 
-      if watch_table == true  do
+      if watch_table == true do
         game = BackupAgent.get(name)
-        socket = socket
-      |> assign(:game, game)
-      |> assign(:name, name)
-      {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
+
+        socket =
+          socket
+          |> assign(:game, game)
+          |> assign(:name, name)
+
+        {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
       else
         game = BackupAgent.get(name) || Game.new(table_name, user_name, length, breadth, capacity)
+
         if create_table == false do
           game = Game.add_player(game, user_name)
           BackupAgent.put(name, game)
         else
           BackupAgent.put(name, game)
         end
+
         game = BackupAgent.get(name)
 
-        socket = socket
-      |> assign(:game, game)
-      |> assign(:name, name)
-      {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
-      end
+        socket =
+          socket
+          |> assign(:game, game)
+          |> assign(:name, name)
 
+        {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
+      end
     else
       {:error, %{reason: "unauthorized"}}
     end
   end
 
-  def handle_in("send_msg", %{"msg" => msg}, socket) do
-    name = socket.assigns[:name]
-    game = Game.append_msg(socket.assigns[:game], msg)
-    socket = assign(socket, :game, game)
+  def handle_in("send_msg", %{"input" => msg, "name" => name, "user" => user}, socket) do
+    game = BackupAgent.get(name)
+    game = Game.append_msg(game, msg, user)
     BackupAgent.put(name, game)
     IO.puts("heyyy")
-    broadcast! socket, "sendmsg", %{game => Game.client_view(game)}
+
+    socket =
+      socket
+      |> assign(:game, game)
+
+    broadcast!(socket, "sendmessage", %{"game" => Game.client_view(game)})
     {:noreply, socket}
     #
     # {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
@@ -58,23 +68,43 @@ defmodule GameOfDotsWeb.GamesChannel do
     game = Game.draw(game, line, user)
     IO.inspect(game)
     BackupAgent.put(name, game)
-    socket = socket
-    |> assign(:game, game)
-    broadcast! socket, "gamechanged", %{"game" => Game.client_view(game)}
+
+    socket =
+      socket
+      |> assign(:game, game)
+
+    broadcast!(socket, "gamechanged", %{"game" => Game.client_view(game)})
     {:noreply, socket}
     # {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
   end
 
-
-  def handle_in("start-game", %{"name" => name,"user" => user}, socket) do
+  def handle_in("start-game", %{"name" => name, "user" => user}, socket) do
     game = BackupAgent.get(name)
     IO.inspect(game)
     game = Game.startGame(game, user)
     IO.inspect(game)
     BackupAgent.put(name, game)
-    socket = socket
-    |> assign(:game, game)
-    {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
+
+    socket =
+      socket
+      |> assign(:game, game)
+
+    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+  end
+
+  def handle_in("reset-game", %{"name" => name, "user" => user}, socket) do
+    game = BackupAgent.get(name)
+    IO.inspect(game)
+    game = Game.resetGame(game, user)
+    IO.inspect(game)
+    BackupAgent.put(name, game)
+
+    socket =
+      socket
+      |> assign(:game, game)
+
+    broadcast!(socket, "gamechanged", %{"game" => Game.client_view(game)})
+    {:noreply, socket}
   end
 
   # Add authorization logic here as required.
