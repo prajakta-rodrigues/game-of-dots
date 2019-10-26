@@ -13,7 +13,8 @@ class GameTable extends React.Component {
     this.props = props
     this.initX = 200;
     this.initY = 50;
-    this.scale = 100
+    this.scale = 100;
+
     console.log(props.userName)
     console.log(props.tableName)
     this.channel = props.channel;
@@ -22,15 +23,11 @@ class GameTable extends React.Component {
       tableName:"",
       gameStarted: false,
       gameOver: false,
-      type:"square",
       dimensions: {
         length: 5,
         breadth: 5
       },
-      linesDrawn: [{x1:0, y1:0, x2:0, y2:1},{x1:0, y1:0, x2:1, y2:0},
-        {x1:1, y1:0, x2:1, y2:1},{x1:1, y1:1, x2:0, y2:1},
-        {x1:2, y1:2, x2:2, y2:3},{x1:2, y1:3, x2:3, y2:3},
-          {x1:3, y1:3, x2:3, y2:2},{x1:3, y1:2, x2:2, y2:2}],
+      linesDrawn: [],
       validLinesRemaining: [],
       turn: 0,
       players: [{
@@ -38,16 +35,6 @@ class GameTable extends React.Component {
         color:"blue",
         score: 0,
         boxesAcquired: [
-          {x1: 0, y1: 0, x2: 1, y2: 1}
-        ]
-      },
-      {
-        name:"User2",
-        color:"yellow",
-        score: 0,
-        boxesAcquired: [
-          {x1: 2, y1: 2, x2: 3, y2: 3},
-          {x1: 0, y1: 1, x2: 1, y2 : 2}
         ]
       }
     ]
@@ -61,6 +48,30 @@ class GameTable extends React.Component {
         this.channel.on("gamechanged",payload=>
         {let game = payload.game;
           console.log("broadcast!!!!!!!!!!");
+          console.log(game);
+          if(game.gameOver) {
+            let maxScore = -1;
+            let winner = [];
+            for (var i = 0; i < this.state.players.length; i++) {
+              if(this.state.players[i].score > maxScore) {
+                maxScore = this.state.players[i].score;
+              }
+            }
+            for (var i = 0; i < this.state.players.length; i++) {
+              if(this.state.players[i].score == maxScore) {
+                winner.push(this.state.players[i].name);
+              }
+            }
+            game.winner = winner
+            console.log("afte cal", game.winner);
+          }
+          this.setState(game);
+        });
+
+        this.channel.on("gamereset",payload=>
+        {let game = payload.game;
+          console.log("broadcast game reset!!!!!!!!!!");
+          console.log(game);
           this.setState(game);
         });
 
@@ -186,6 +197,13 @@ startGame() {
     .receive("ok", this.got_view.bind(this));
 }
 
+resetGame() {
+  console.log("reset game table");
+  this.channel.push("reset-game", {name:this.state.tableName,
+    user:this.props.userName})
+    .receive("ok", this.got_view.bind(this));
+}
+
   render() {
     let gridLength = this.state.dimensions.length;
     let gridBreadth = this.state.dimensions.breadth;
@@ -194,6 +212,20 @@ startGame() {
     let grid = [];
     let drawnLines = [];
     let boxes = [];
+    let winners = [];
+
+        if(this.state.hasOwnProperty("winner")) {
+          winners.push(<h2 key="gmOver">Game Over!</h2>)
+            winners.push(<h2 key="winners">Winners are:</h2>)
+          for (var i = 0; i < this.state.winner.length; i++) {
+            winners.push(<h3>{this.state.winner[i]}</h3>)
+          }
+          console.log(this.state.winner.length);
+          console.log("heyyyyy winners",winners);
+        }
+
+
+
     for(var i = 0; i < this.state.linesDrawn.length ; i++) {
       drawnLines.push(<Line
         x = {(this.scale * this.state.linesDrawn[i].x1) + this.initX}
@@ -308,8 +340,14 @@ startGame() {
               {this.state.gameStarted || this.state.ownerId
                 != this.props.userName ? null:
                 <button onClick={this.startGame.bind(this)}>Start game</button>}
+                {this.state.gameOver && this.state.ownerId
+                  == this.props.userName ?  <button
+                  onClick={this.resetGame.bind(this)}>Reset Game</button>:null}
+
             </div>
-            <ChatBox></ChatBox>
+              {winners}
+            // <ChatBox channel={this.channel} userName = {props.userName}
+            // tableName = {this.state.tableName}></ChatBox>
           </Portal>
           {currentLine}
           {drawnLines}

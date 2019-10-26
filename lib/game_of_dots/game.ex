@@ -11,7 +11,7 @@ defmodule GameOfDots.Game do
         breadth: length
       },
       linesDrawn: [],
-      validLinesRemaining: generateValidLines(2, 2),
+      validLinesRemaining: generateValidLines(length - 1, breadth - 1),
       turn: 0,
       players: [],
       audience: [],
@@ -24,7 +24,12 @@ defmodule GameOfDots.Game do
     game
   end
 
-  def append_msg(game, msg) do
+  def append_msg(game, msg, user) do
+    message = %{
+      name: user,
+      text: msg
+    }
+
     message_new = [game.messages | msg]
     %{game | messages: message_new}
   end
@@ -131,6 +136,279 @@ defmodule GameOfDots.Game do
     # }
   end
 
+  def checkAlongY1Axis(game, coords, userName) do
+    if coords["y1"] == coords["y2"] do
+      IO.inspect("check if y1 equals")
+
+      if Enum.member?(game.linesDrawn, %{
+           "x1" => coords["x1"],
+           "y1" => coords["y1"] - 1,
+           "x2" => coords["x1"],
+           "y2" => coords["y1"]
+         }) &&
+           Enum.member?(game.linesDrawn, %{
+             "x1" => coords["x2"],
+             "y1" => coords["y1"] - 1,
+             "x2" => coords["x2"],
+             "y2" => coords["y1"]
+           }) &&
+           Enum.member?(game.linesDrawn, %{
+             "x1" => coords["x1"],
+             "y1" => coords["y1"] - 1,
+             "x2" => coords["x2"],
+             "y2" => coords["y1"] - 1
+           }) do
+        # add to acquired
+        IO.puts("Atleast condition achieved")
+
+        newPlayers =
+          Enum.map(
+            game.players,
+            fn item ->
+              if(item[:name] == userName) do
+                boxAcquired =
+                  item.boxesAcquired ++
+                    [
+                      %{
+                        "x1" => coords["x1"],
+                        "y1" => coords["y1"] - 1,
+                        "x2" => coords["x2"],
+                        "y2" => coords["y2"]
+                      }
+                    ]
+
+                item = Map.put(item, :boxesAcquired, boxAcquired)
+                item = Map.put(item, :score, item.score + 5)
+                # IO.puts("item modi")
+                # IO.inspect(item)
+              else
+                item
+              end
+            end
+          )
+
+        game = Map.put(game, :players, newPlayers)
+        IO.puts("see here")
+        IO.inspect(game)
+        IO.puts("before")
+        game
+      else
+        game
+      end
+    else
+      IO.puts("not equals")
+      IO.inspect(coords)
+      game
+    end
+  end
+
+  def checkAlongY2Axis(game, coords, userName) do
+    if coords["y1"] == coords["y2"] do
+      IO.inspect("check if y2 equals")
+      IO.puts("input")
+      IO.inspect(coords)
+      IO.puts("processing")
+
+      if Enum.member?(game.linesDrawn, %{
+           "x1" => coords["x1"],
+           "y1" => coords["y1"],
+           "x2" => coords["x1"],
+           "y2" => coords["y1"] + 1
+         }) &&
+           Enum.member?(game.linesDrawn, %{
+             "x1" => coords["x2"],
+             "y1" => coords["y1"],
+             "x2" => coords["x2"],
+             "y2" => coords["y1"] + 1
+           }) &&
+           Enum.member?(game.linesDrawn, %{
+             "x1" => coords["x1"],
+             "y1" => coords["y1"] + 1,
+             "x2" => coords["x2"],
+             "y2" => coords["y1"] + 1
+           }) do
+        # add to acquired
+        IO.puts("y2 condition achieved")
+
+        newPlayers =
+          Enum.map(
+            game.players,
+            fn item ->
+              if(item[:name] == userName) do
+                boxAcquired =
+                  item.boxesAcquired ++
+                    [
+                      %{
+                        "x1" => coords["x1"],
+                        "y1" => coords["y1"] + 1,
+                        "x2" => coords["x2"],
+                        "y2" => coords["y2"]
+                      }
+                    ]
+
+                item = Map.put(item, :boxesAcquired, boxAcquired)
+                item = Map.put(item, :score, item.score + 5)
+                # IO.puts("item modi")
+                # IO.inspect(item)
+              else
+                item
+              end
+            end
+          )
+
+        game = Map.put(game, :players, newPlayers)
+        IO.puts("see here")
+        IO.inspect(game)
+        IO.puts("before")
+        game
+      else
+        game
+      end
+    else
+      IO.puts("not equals")
+      IO.inspect(coords)
+      game
+    end
+  end
+
+  def checkAlongX1Axis(game, coords, userName) do
+    if coords["x1"] == coords["x2"] do
+      IO.inspect("check if x1 equals")
+      IO.puts("input")
+      IO.inspect(coords)
+      IO.puts("processing")
+
+      if Enum.member?(game.linesDrawn, %{
+           "x1" => coords["x1"] - 1,
+           "y1" => coords["y1"],
+           "x2" => coords["x1"] - 1,
+           "y2" => coords["y2"]
+         }) &&
+           Enum.member?(game.linesDrawn, %{
+             "x1" => coords["x1"] - 1,
+             "y1" => coords["y1"],
+             "x2" => coords["x1"],
+             "y2" => coords["y1"]
+           }) &&
+           Enum.member?(game.linesDrawn, %{
+             "x1" => coords["x1"] - 1,
+             "y1" => coords["y2"],
+             "x2" => coords["x1"],
+             "y2" => coords["y2"]
+           }) do
+        # add to acquired
+        IO.puts("x1 condition achieved")
+
+        newPlayers =
+          Enum.map(
+            game.players,
+            fn item ->
+              if(item[:name] == userName) do
+                boxAcquired =
+                  item.boxesAcquired ++
+                    [
+                      %{
+                        "x1" => coords["x1"] - 1,
+                        "y1" => coords["y1"],
+                        "x2" => coords["x1"],
+                        "y2" => coords["y2"]
+                      }
+                    ]
+
+                item = Map.put(item, :boxesAcquired, boxAcquired)
+                item = Map.put(item, :score, item.score + 5)
+                # IO.puts("item modi")
+                # IO.inspect(item)
+              else
+                item
+              end
+            end
+          )
+
+        game = Map.put(game, :players, newPlayers)
+        IO.puts("see here")
+        IO.inspect(game)
+        IO.puts("before")
+        game
+      else
+        game
+      end
+    else
+      IO.puts("not equals")
+      IO.inspect(coords)
+      game
+    end
+  end
+
+  def checkAlongX2Axis(game, coords, userName) do
+    if coords["x1"] == coords["x2"] do
+      IO.inspect("check if x1 equals")
+      IO.puts("input")
+      IO.inspect(coords)
+      IO.puts("processing")
+
+      if Enum.member?(game.linesDrawn, %{
+           "x1" => coords["x1"] + 1,
+           "y1" => coords["y1"],
+           "x2" => coords["x1"] + 1,
+           "y2" => coords["y2"]
+         }) &&
+           Enum.member?(game.linesDrawn, %{
+             "x1" => coords["x1"],
+             "y1" => coords["y1"],
+             "x2" => coords["x1"] + 1,
+             "y2" => coords["y1"]
+           }) &&
+           Enum.member?(game.linesDrawn, %{
+             "x1" => coords["x1"],
+             "y1" => coords["y2"],
+             "x2" => coords["x1"] + 1,
+             "y2" => coords["y2"]
+           }) do
+        # add to acquired
+        IO.puts("x2 condition achieved")
+
+        newPlayers =
+          Enum.map(
+            game.players,
+            fn item ->
+              if(item[:name] == userName) do
+                boxAcquired =
+                  item.boxesAcquired ++
+                    [
+                      %{
+                        "x1" => coords["x1"],
+                        "y1" => coords["y1"],
+                        "x2" => coords["x1"] + 1,
+                        "y2" => coords["y2"]
+                      }
+                    ]
+
+                item = Map.put(item, :boxesAcquired, boxAcquired)
+                item = Map.put(item, :score, item.score + 5)
+                # IO.puts("item modi")
+                # IO.inspect(item)
+              else
+                item
+              end
+            end
+          )
+
+        game = Map.put(game, :players, newPlayers)
+        IO.puts("see here")
+        IO.inspect(game)
+        IO.puts("before")
+        game
+      else
+        game
+      end
+    else
+      IO.puts("not equals")
+      IO.inspect(coords)
+      game
+    end
+  end
+
   def draw(game, coords, userName) do
     IO.puts("In draw")
     IO.inspect(coords)
@@ -141,72 +419,22 @@ defmodule GameOfDots.Game do
       IO.inspect(coords)
       IO.inspect(game.linesDrawn)
       linesDrawn = game.linesDrawn ++ [coords]
+      validLinesRemaining = game.validLinesRemaining -- [coords]
       length = length(game.players)
       game = Map.put(game, :linesDrawn, linesDrawn)
+      game = Map.put(game, :validLinesRemaining, validLinesRemaining)
       turn = rem(game.turn + 1, length)
       game = Map.put(game, :turn, turn)
       # IO.inspect(game)
+      game = checkAlongY1Axis(game, coords, userName)
+      game = checkAlongY2Axis(game, coords, userName)
+      game = checkAlongX1Axis(game, coords, userName)
+      game = checkAlongX2Axis(game, coords, userName)
 
-      if coords["y1"] == coords["y2"] do
-        IO.inspect("check if y1 equals")
-
-        if Enum.member?(game.linesDrawn, %{
-             "x1" => coords["x1"],
-             "y1" => coords["y1"] - 1,
-             "x2" => coords["x1"],
-             "y2" => coords["y1"]
-           }) &&
-             Enum.member?(game.linesDrawn, %{
-               "x1" => coords["x2"],
-               "y1" => coords["y1"] - 1,
-               "x2" => coords["x2"],
-               "y2" => coords["y1"]
-             }) &&
-             Enum.member?(game.linesDrawn, %{
-               "x1" => coords["x1"],
-               "y1" => coords["y1"] - 1,
-               "x2" => coords["x2"],
-               "y2" => coords["y1"] - 1
-             }) do
-          # add to acquired
-          IO.puts("Atleast condition achieved")
-
-          newPlayers =
-            Enum.map(
-              game.players,
-              fn item ->
-                if(item[:name] == userName) do
-                  boxAcquired =
-                    item.boxesAcquired ++
-                      [
-                        %{
-                          "x1" => coords["x1"],
-                          "y1" => coords["y1"] - 1,
-                          "x2" => coords["x2"],
-                          "y2" => coords["y2"]
-                        }
-                      ]
-
-                  item = Map.put(item, :boxesAcquired, boxAcquired)
-                  # IO.puts("item modi")
-                  # IO.inspect(item)
-                else
-                  item
-                end
-              end
-            )
-
-          game = Map.put(game, :players, newPlayers)
-          IO.puts("see here")
-          IO.inspect(game)
-          IO.puts("before")
-          game
-        else
-          game
-        end
+      if length(game.validLinesRemaining) == 0 do
+        game = Map.put(game, :gameOver, true)
+        game
       else
-        IO.puts("not equals")
-        IO.inspect(coords)
         game
       end
     else
@@ -272,5 +500,34 @@ defmodule GameOfDots.Game do
     colors = ~w(#fcba03 #acba09 #fc5a03 #84fc03 #03dbfc #0394fc)
     {:ok, color} = Enum.fetch(colors, player_no)
     color
+  end
+
+  def resetGame(game, user) do
+    game = Map.put(game, :gameOver, false)
+    game = Map.put(game, :gameStarted, false)
+    game = Map.put(game, :linesDrawn, [])
+    game = Map.put(game, :turn, 0)
+
+    game =
+      Map.put(
+        game,
+        :validLinesRemaining,
+        generateValidLines(
+          game.dimensions.length - 1,
+          game.dimensions.breadth - 1
+        )
+      )
+
+    newPlayers =
+      Enum.map(
+        game.players,
+        fn item ->
+          item = Map.put(item, :boxesAcquired, [])
+          item = Map.put(item, :score, 0)
+        end
+      )
+
+    game = Map.put(game, :players, newPlayers)
+    game
   end
 end
