@@ -5,6 +5,7 @@ import Konva from 'konva';
 import Portal from './portal'
 import {Stage, Layer, Rect, Text,Line, Circle} from 'react-konva';
 import css from "../css/game-table.css";
+import ChatBox from "./chat-box";
 
 class GameTable extends React.Component {
   constructor(props) {
@@ -308,6 +309,7 @@ startGame() {
                 != this.props.userName ? null:
                 <button onClick={this.startGame.bind(this)}>Start game</button>}
             </div>
+            <ChatBox></ChatBox>
           </Portal>
           {currentLine}
           {drawnLines}
