@@ -163,6 +163,6 @@ using callback functions.
 
 ## Citation
 
-https://hexdocs.pm/phoenix/Phoenix.Channel.html
+https://hexdocs.pm/phoenix/Phoenix.Channel.html/
 http://www.ccs.neu.edu/home/ntuck/courses/2019/09/cs5610/notes/
 https://github.com/NatTuck/memory
