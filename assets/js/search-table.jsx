@@ -70,7 +70,7 @@ class Tables extends React.Component {
         let newList = [];
         let nameList = this.state.tables.map(item => item.name);
         if(e.target.value != "") {
-            newList = nameList.filter(item => 
+            newList = nameList.filter(item =>
                 item.includes(e.target.value)
             );
         } else {
@@ -102,20 +102,21 @@ class Tables extends React.Component {
         }
     }
 
-    watchGame() {
-        this.setState({watchGame: true})
+    watchGame(tableName) {
+        this.setState({tableName: tableName,
+          watchGame: true})
     }
 
     joinTable(tableName, createTable) {
         this.setState({joinGame: true,
                         tableName: tableName});
-        
+
 
         if(createTable == false) {
             this.channel.push("join_table", {table_name: tableName, player_name: this.state.userName}).
             receive("ok", this.got_view.bind(this));
         }
-        
+
     }
 
     getTableName(e) {
@@ -201,17 +202,18 @@ class Tables extends React.Component {
                 <div className="product-image3" key={tableName + "img3"}>
                     <a href="#" key={tableName + "k1"}>
                         <img className="pic-1" src={logo} alt={"grid-image1"} key={tableName + "pc1"}/>
-                        <img className="pic-2" src={logo} alt={"grid-image2"} key={tableName + "pc2"}/>
+            
                     </a>
-                    
+
                 </div>
                 <div className="product-content" key={tableName + "prod"}>
-                    <h3 className="title" key={tableName + "til"}><a href="#" key={tableName + "anc1"}>{tableName}</a> 
-                    <a href="#" key={tableName + "anc2"}>Capacity: {capacity}</a></h3>
+                    <h3 className="title" key={tableName + "til"}>
+                      <p key={tableName + "anc1"}>{tableName}</p>
+                    <p key={tableName + "anc2"}> Capacity: {capacity}</p></h3>
                     <div className="price" key={tableName + "price"}>
                         {capacity == 0 && !containsPlayer? <button onClick={() => this.joinTable(tableName, false)} key={tableName + "dis"} disabled>Join</button>
                         : <button onClick={() => this.joinTable(tableName, false)} key={tableName + "but"}>Join</button>}
-                        <button onClick={() => this.watchGame()} key={tableName + "watch"}>Watch</button>
+                        <button onClick={() => this.watchGame(tableName)} key={tableName + "watch"}>Watch</button>
                     </div>
                 </div>
             </div>
@@ -243,21 +245,21 @@ class Tables extends React.Component {
        />
               : null
               }
-                    
+
                     <input type="text" placeholder="Search..." onChange={(e) => this.handleChange(e)} className="mr-sm-2" />
-                    
+
                     {addSign}
                     <div>{rows}</div>
 
                 </div>
         </div>
-        
+
             )
         }else {
             let attributes = {tablename: this.state.tableName, username: this.state.userName, length: this.state.length,
             breadth: this.state.breadth, createTable: this.state.createTable, capacity: this.state.capacity, watchGame: this.state.watchGame};
             let channel = socket.channel("games:" + this.state.tableName, attributes);
-            return <GameTable userName = {this.state.userName} 
+            return <GameTable userName = {this.state.userName}
             tableName = {this.state.tableName}
             channel = {channel}></GameTable>
         }
@@ -281,7 +283,7 @@ class CreateTable extends React.Component {
               <Modal.Body>
                 <form>
                     <label>
-                        Table Name: 
+                        Table Name:
                     </label>
                     {this.props.tableTaken? <input type="text" onChange={this.props.getTableName} id="tablename"value =""></input> :
                     <input type="text" onChange={this.props.getTableName} id="tablename"></input>}

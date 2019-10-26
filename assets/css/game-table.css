@@ -24,9 +24,18 @@
   right: 0;
   position: absolute;
   bottom:0;
+  height: 200px;
+  width:300px;
+  background: cadetblue;
 }
 
 .chat-header {
   background-color: beige;
   color:darkslateblue;
+  padding: 2%;
+}
+
+.chat-messages {
+  height: 167px;
+  scroll-behavior: auto;
 }

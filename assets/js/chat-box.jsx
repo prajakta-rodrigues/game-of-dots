@@ -11,7 +11,7 @@ class ChatBox extends React.Component {
       currentMessage: ""
     }
 
-    this.channel.on("sendmessage",payload=>
+    this.props.channel.on("sendmessage",payload=>
     {let game = payload.game;
       console.log("msg received");
       console.log(game.messages);
@@ -25,7 +25,7 @@ class ChatBox extends React.Component {
 
 inputChange(e) {
   let currentMessage = e.target.value;
-  let stateCpy = cloneDeep(this.state);
+  let stateCpy = _.cloneDeep(this.state);
   stateCpy.currentMessage = currentMessage;
   this.setState(stateCpy);
 }
@@ -33,7 +33,7 @@ inputChange(e) {
 sendMessage() {
   this.props.channel.push("send-msg", {input: this.state.currentMessage,
     name:this.props.tableName, user:this.props.userName})
-    .receive("ok", this.got_view.bind(this));
+    .receive("ok", console.log("received"));
 }
 
     render() {

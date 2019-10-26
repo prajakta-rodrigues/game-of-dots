@@ -30,8 +30,10 @@ defmodule GameOfDots.Game do
       text: msg
     }
 
-    message_new = [game.messages | msg]
-    %{game | messages: message_new}
+    # message_new = [game.messages | msg]
+    IO.inspect(message)
+    message_new = game.messages ++ [message]
+    Map.put(game, :messages, message_new)
   end
 
   def generateValidLines(length, breadth) do
@@ -409,10 +411,43 @@ defmodule GameOfDots.Game do
     end
   end
 
+  def verifyCoordsX(coords) do
+    if coords["x1"] > coords["x2"] do
+      IO.puts("output")
+      temp = coords["x1"]
+      coords = Map.put(coords, "x1", coords["x2"])
+      coords = Map.put(coords, "x2", temp)
+      temp = coords["y1"]
+      coords = Map.put(coords, "y1", coords["y2"])
+      coords = Map.put(coords, "y2", temp)
+    else
+      coords
+    end
+  end
+
+  def verifyCoordsY(coords) do
+    if coords["y1"] > coords["y2"] do
+      IO.puts("output")
+      temp = coords["y1"]
+      coords = Map.put(coords, "y1", coords["y2"])
+      coords = Map.put(coords, "y2", temp)
+      temp = coords["x1"]
+      coords = Map.put(coords, "x1", coords["x2"])
+      coords = Map.put(coords, "x2", temp)
+    else
+      coords
+    end
+  end
+
   def draw(game, coords, userName) do
     IO.puts("In draw")
+    IO.puts("before coords")
     IO.inspect(coords)
     IO.inspect(game.validLinesRemaining)
+    coords = verifyCoordsX(coords)
+    coords = verifyCoordsY(coords)
+    IO.puts("before coords")
+    IO.inspect(coords)
 
     if Enum.member?(game.validLinesRemaining, coords) do
       IO.puts("Step 1")

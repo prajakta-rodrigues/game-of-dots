@@ -46,7 +46,7 @@ defmodule GameOfDotsWeb.GamesChannel do
     end
   end
 
-  def handle_in("send_msg", %{"input" => msg, "name" => name, "user" => user}, socket) do
+  def handle_in("send-msg", %{"input" => msg, "name" => name, "user" => user}, socket) do
     game = BackupAgent.get(name)
     game = Game.append_msg(game, msg, user)
     BackupAgent.put(name, game)

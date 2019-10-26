@@ -18,6 +18,7 @@ class GameTable extends React.Component {
     console.log(props.userName)
     console.log(props.tableName)
     this.channel = props.channel;
+    console.log(this.channel);
     this.state = {
       ownerId:"User1",
       tableName:"",
@@ -37,7 +38,8 @@ class GameTable extends React.Component {
         boxesAcquired: [
         ]
       }
-    ]
+    ],
+    messages:[]
     };
 
     this.channel
@@ -67,6 +69,15 @@ class GameTable extends React.Component {
           }
           this.setState(game);
         });
+
+        this.channel.on("sendmessage",payload=>
+        {let game = payload.game;
+          console.log("msg received");
+          console.log(game.messages);
+          this.setState(game);
+          console.log(game)
+        });
+
 
         this.channel.on("gamereset",payload=>
         {let game = payload.game;
@@ -102,9 +113,6 @@ class GameTable extends React.Component {
     let isDotCheck = new RegExp('^circle');
     let start = stage.clickStartShape.attrs
     let end = stage.clickEndShape.attrs
-    console.log(start.x, start.y, end.x, end.y);
-    console.log((start.x - this.initX)/ this.scale);
-    console.log((start.y - this.initY)/ this.scale);
     if(isDotCheck.test(start.name) &&
     isDotCheck.test(end.name)) {
       let now = {
@@ -114,26 +122,14 @@ class GameTable extends React.Component {
         y2: (end.y - this.initY) / this.scale
       }
 
-      if(this.containsObject(now, this.state.validLinesRemaining)) {
+
         console.log("Seeeeeeeee tisss add meee");
         let stateCpy = _.cloneDeep(this.state);
-        // stateCpy.linesDrawn.push({
-        //   x1: (start.x - this.initX)/ this.scale ,
-        //   y1: (start.y - this.initY)/ this.scale,
-        //   x2: (end.x - this.initX) / this.scale,
-        //   y2: (end.y - this.initY) / this.scale
-        // }
-        // );
         this.channel.push("draw", {input: now,
           name:this.state.tableName, user:this.props.userName})
           .receive("ok", this.got_view.bind(this));
-          // this.got_view.bind(this)
-
-        console.log(stateCpy.linesDrawn[1]);
-        console.log(stateCpy.linesDrawn[0]);
-        // stateCpy.turn = (stateCpy.turn + 1) % stateCpy.players.length;
         this.setState(stateCpy);
-      }
+
 
     }
     this.drawing = false;
@@ -190,6 +186,18 @@ class GameTable extends React.Component {
 
   }
 
+  sendMessage() {
+    console.log("inside send")
+    var input = document.getElementById("snd-msg").value;
+    console.log(this.channel);
+    console.log(input);
+    console.log("look here");
+    this.channel.push("send-msg", {input: input,
+      name: this.state.tableName, user:this.props.userName})
+      .receive("ok", console.log("received"));
+  }
+
+
 startGame() {
   console.log("game started");
   this.channel.push("start-game", {name:this.state.tableName,
@@ -213,6 +221,12 @@ resetGame() {
     let drawnLines = [];
     let boxes = [];
     let winners = [];
+    let messages = [];
+    for(var i = 0; i < this.state.messages.length; i++) {
+      messages.push(<h5>{this.state.messages[i].name}
+         says: {this.state.messages[i].text}</h5>);
+    }
+    console.log("messages" , messages);
 
         if(this.state.hasOwnProperty("winner")) {
           winners.push(<h2 key="gmOver">Game Over!</h2>)
@@ -264,16 +278,6 @@ resetGame() {
     console.log(boxes);
     console.log(drawnLines);
 
-    // grid.push(
-    //   <Rect
-    //     x = {200}
-    //     key = "rect123"
-    //     y = {50}
-    //     width = {500}
-    //     height = {500}
-    //     fill="pink">
-    //   </Rect>
-    // );
     for(var i = 0; i < gridLength; i++) {
       for (var j = 0; j < gridBreadth; j++) {
         grid.push(
@@ -345,9 +349,21 @@ resetGame() {
                   onClick={this.resetGame.bind(this)}>Reset Game</button>:null}
 
             </div>
-              {winners}
-            // <ChatBox channel={this.channel} userName = {props.userName}
-            // tableName = {this.state.tableName}></ChatBox>
+            <div>{winners}</div>
+            <div className= "chat-box">
+              <div className= "chat-header">Chat Now</div>
+              <div className="chat-body">
+                <div className="chat-messages"> {messages}
+                </div>
+                <div className="history">
+                  <input type="text" placeholder="Type your message..."
+                     className="mr-sm-2" id="snd-msg"/>
+                     </div>
+                    <div className="send">
+                  <button onClick={this.sendMessage.bind(this)}>Send</button>
+                  </div>
+              </div>
+              </div>
           </Portal>
           {currentLine}
           {drawnLines}
