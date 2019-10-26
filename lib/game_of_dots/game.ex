@@ -12,15 +12,14 @@ defmodule GameOfDots.Game do
         breadth: length
         },
         linesDrawn: [],
-        validLinesRemaining: [],
+        validLinesRemaining: generateValidLines(2, 2),
         turn: 0,
         players: [],
         audience: [],
         capacity: capacity - 1,
         messages: []
       }
-      hm = generateValidLines(2, 2);
-      IO.inspect(hm);
+      IO.puts("overhere")
       game = add_player(game, user_name)
       game
     end
@@ -33,45 +32,81 @@ defmodule GameOfDots.Game do
 
     def generateValidLines(length, breadth) do
       validLines = [];
-      # validLines = generateValidHorizontalLines(length - 1, breadth - 1, []);
-      # validLines = generateVerticalLines(breadth - 1, length - 1, validLines);
+      validLines = generateValidHorizontalLines(length, breadth, []);
+      validLines = generateVerticalLines(length, breadth, validLines);
       validLines
     end
 
-    def generateVerticalLines(length, j, validLines) do
-      if j == 0 do
+    def generateVerticalLines(length, breadth, validLines) do
+      IO.puts("reached here")
+      IO.puts("length")
+      IO.puts(length)
+      IO.puts("breadth")
+      IO.puts(breadth)
+      if breadth < 0 do
+        validLines
+      else
+        validLines = generateVertLines(length, breadth, validLines)
+        IO.puts("after vert call")
+        IO.inspect(validLines)
+        breadth = breadth - 1
+        validLines = generateVerticalLines(length, breadth, validLines)
         validLines
       end
-      validLines = generateVertLines(length, j - 1, j, validLines)
-      generateVerticalLines(length, j - 1, validLines)
-      validLines
     end
 
-    def generateVertLines(x, y1, y2, validLines) do
-      if x == 0 do
+    def generateVertLines(length, breadth , validLines) do
+      IO.puts("vert here")
+      IO.puts("length")
+      IO.puts(length)
+      IO.puts("breadth")
+      IO.puts(breadth)
+      if length == 0 do
+        IO.inspect(validLines)
+        validLines
+      else
+        validLines = validLines ++ [%{"x1" => length - 1, "x2" => length,
+        "y1" => breadth , "y2" => breadth}]
+        length = length - 1
+        validLines = generateVertLines(length, breadth, validLines)
         validLines
       end
-      validLines = validLines ++ [%{x1: x, x2: x, y1: y1 , y2: y2}]
-      generateVertLines(x-1, y1, y2, validLines)
-      validLines
     end
 
-    def generateValidHorizontalLines(i, breadth, validLines) do
-      if i == 0 do
+    def generateValidHorizontalLines(length, breadth, validLines) do
+      IO.puts("reached here")
+      IO.puts("length")
+      IO.puts(length)
+      IO.puts("breadth")
+      IO.puts(breadth)
+      if breadth < 0 do
+        validLines
+      else
+        validLines = generateHoriLines(length, breadth, validLines)
+        IO.puts("after vert call")
+        IO.inspect(validLines)
+        breadth = breadth - 1
+        validLines = generateValidHorizontalLines(length, breadth, validLines)
         validLines
       end
-      validLines = generateHoriLines(i - 1, i, breadth, validLines )
-      generateValidHorizontalLines(i-1, breadth, validLines)
-      validLines
     end
 
-    def generateHoriLines(x1, x2, y, validLines) do
-      if y == 0 do
+    def generateHoriLines(length, breadth, validLines) do
+      IO.puts("vert here")
+      IO.puts("length")
+      IO.puts(length)
+      IO.puts("breadth")
+      IO.puts(breadth)
+      if length == 0 do
+        IO.inspect(validLines)
+        validLines
+      else
+        validLines = validLines ++ [%{"y1" => length - 1, "y2" => length,
+        "x1" => breadth , "x2" => breadth}]
+        length = length - 1
+        validLines = generateHoriLines(length, breadth, validLines)
         validLines
       end
-      validLines = validLines ++ [%{x1: x1, x2: x2, y1: y , y2: y}]
-      generateHoriLines(x1, x2, y - 1, validLines)
-      validLines
     end
 
 
@@ -93,35 +128,55 @@ defmodule GameOfDots.Game do
     end
 
     def draw(game, coords, userName) do
+      IO.puts("In draw")
+      IO.inspect(coords);
+      IO.inspect(game.validLinesRemaining);
       if Enum.member?(game.validLinesRemaining, coords) do
-        game.linesDrawn ++ [coords]
-        if coords.y1 == coords.y2 do
-          if Enum.member?(game.linesDrawn, %{x1: coords.x1, y1: coords.y1-1,
-          x2: coords.x1, y2: coords.y1})
-          && Enum.member?(game.linesDrawn, %{x1: coords.x2, y1: coords.y1-1,
-          x2: coords.x2, y2: coords.y1})
-          && Enum.member?(game.linesDrawn, %{x1: coords.x1, y1: coords.y1-1,
-          x2: coords.x2, y2: coords.y1-1}) do
+        IO.puts("Step 1")
+        IO.inspect(coords)
+        IO.inspect(game.linesDrawn)
+        linesDrawn = game.linesDrawn ++ [coords]
+        length = length(game.players)
+        turn = rem(game.turn + 1, length)
+        game = Map.put(game, :linesDrawn, linesDrawn)
+        game = Map.put(game, :turn, turn)
+        IO.inspect(game)
+        if coords["y1"] == coords["y2"] do
+          if Enum.member?(game.linesDrawn, %{"x1" => coords["x1"],
+          "y1" => coords["y1"]-1,
+          "x2" => coords["x1"], "y2" => coords["y1"]})
+          && Enum.member?(game.linesDrawn, %{"x1" => coords["x2"],
+          "y1" => coords["y1"]-1,
+          "x2" => coords["x2"], "y2" => coords["y1"]})
+          && Enum.member?(game.linesDrawn, %{"x1" => coords["x1"],
+          "y1" => coords["y1"]-1,
+          "x2" => coords["x2"], "y2" => coords["y1"]-1}) do
             # add to acquired
             newPlayers = Enum.map(game.players,
             fn(item) -> if(item[:name] == userName) do
               boxAcquired = item.boxesAcquired ++
-              [%{x1: coords.x1, y1: (coords.y1 -1), x2: coords.x2, y2: coords.y2 }]
+              [%{"x1" => coords["x1"], "y1" => coords["y1"] -1, "x2" => coords["x2"],
+              "y2" => coords["y2"] }]
               item = %{item | boxesAcquired: boxAcquired}
             end end)
             game = %{game | players: newPlayers}
           end
-          if Enum.member?(game.linesDrawn, %{x1: coords.x1, y1: coords.y1+1,
-          x2: coords.x1, y2: coords.y1})
-          && Enum.member?(game.linesDrawn, %{x1: coords.x2, y1: coords.y1+1,
-          x2: coords.x2, y2: coords.y1})
-          && Enum.member?(game.linesDrawn, %{x1: coords.x1, y1: coords.y1+1,
-          x2: coords.x2, y2: coords.y1+1}) do
+          if Enum.member?(game.linesDrawn, %{"x1" => coords["x1"],
+          "y1" => coords["y1"]+1,
+          "x2" => coords["x1"], "y2" => coords["y1"]})
+          && Enum.member?(game.linesDrawn, %{"x1" => coords["x2"],
+          "y1" => coords["y1"]+1,
+          "x2" => coords.x2, "y2" => coords["y1"]})
+          && Enum.member?(game.linesDrawn, %{"x1" => coords["x1"],
+          "y1" => coords["y1"]+1,
+          "x2" => coords["x2"], "y2" => coords["y1"]+1}) do
 
             newPlayers = Enum.map(game.players,
             fn(item) -> if(item[:name] == userName) do
               boxAcquired = item.boxesAcquired ++
-              [%{x1: coords.x1, y1: (coords.y1 + 1), x2: coords.x2,y2: coords.y2 }]
+              [%{"x1" => coords["x1"], "y1" => (coords["y1"] + 1),
+              "x2" => coords["x2"],
+              "y2" => coords["y2"] }]
               item = %{item | boxesAcquired: boxAcquired}
 
             end
@@ -129,9 +184,10 @@ defmodule GameOfDots.Game do
           game = %{game | players: newPlayers}
         end
       end
-
+      game
+    else
+      game
     end
-    game
   end
 
   def create_table(game, table_name, owner) do
@@ -142,9 +198,9 @@ defmodule GameOfDots.Game do
   end
 
   def add_player(game, user_name) do
-    
+
     players = game.players
-    
+
     if players == nil do
       newPlayer = %{
         name: user_name,
@@ -158,9 +214,9 @@ defmodule GameOfDots.Game do
     game
     else
       player_names = Enum.map(players, fn (player) -> player.name end)
-      
+
       is_member = Enum.member?(player_names, user_name)
-      
+
     if is_member == false do
       newPlayer = %{
         name: user_name,
@@ -175,6 +231,18 @@ defmodule GameOfDots.Game do
     else
       game
     end
+    end
+  end
+
+  def startGame(game, user) do
+
+    if game.gameStarted == false && game.ownerId == user do
+      IO.puts("On right track")
+      game = Map.put(game, :gameStarted, true)
+      game
+    else
+      IO.puts("went her instead")
+      game
     end
   end
 
