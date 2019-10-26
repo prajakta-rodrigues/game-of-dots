@@ -4,7 +4,6 @@ defmodule GameOfDotsWeb.GamesChannel do
   alias GameOfDots.BackupAgent
 
   def join("games:" <> name, payload, socket) do
-
     if authorized?(payload) do
       table_name = Map.get(payload, "tablename")
       user_name = Map.get(payload, "username")
@@ -23,11 +22,7 @@ defmodule GameOfDotsWeb.GamesChannel do
       else
         game = BackupAgent.get(name) || Game.new(table_name, user_name, length, breadth, capacity)
         if create_table == false do
-          players = game.players
-
           game = Game.add_player(game, user_name)
-
-
           BackupAgent.put(name, game)
         else
           BackupAgent.put(name, game)
@@ -49,10 +44,12 @@ defmodule GameOfDotsWeb.GamesChannel do
     name = socket.assigns[:name]
     game = Game.append_msg(socket.assigns[:game], msg)
     socket = assign(socket, :game, game)
-    broadcast! socket, "sendmsg", %{game => game}
-    {:noreply, socket}
     BackupAgent.put(name, game)
-    {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
+    IO.puts("heyyy")
+    broadcast! socket, "sendmsg", %{game => Game.client_view(game)}
+    {:noreply, socket}
+    #
+    # {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
   end
 
   def handle_in("draw", %{"name" => name, "input" => line, "user" => user}, socket) do
@@ -63,7 +60,9 @@ defmodule GameOfDotsWeb.GamesChannel do
     BackupAgent.put(name, game)
     socket = socket
     |> assign(:game, game)
-    {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
+    broadcast! socket, "gamechanged", %{"game" => Game.client_view(game)}
+    {:noreply, socket}
+    # {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
   end
 
 

@@ -136,7 +136,10 @@ defmodule GameOfDots.Game do
         IO.inspect(coords)
         IO.inspect(game.linesDrawn)
         linesDrawn = game.linesDrawn ++ [coords]
+        length = length(game.players)
+        turn = rem(game.turn + 1, length)
         game = Map.put(game, :linesDrawn, linesDrawn)
+        game = Map.put(game, :turn, turn)
         IO.inspect(game)
         if coords["y1"] == coords["y2"] do
           if Enum.member?(game.linesDrawn, %{"x1" => coords["x1"],

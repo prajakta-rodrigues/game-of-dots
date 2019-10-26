@@ -57,6 +57,12 @@ class GameTable extends React.Component {
         .receive("ok", this.got_view.bind(this))
         .receive("error", resp => { console.log("Unable to join", resp); });
 
+        this.channel.on("gamechanged",payload=>
+        {let game = payload.game;
+          console.log("broadcast!!!!!!!!!!");
+          this.setState(game);
+        });
+
   }
 
   got_view(view) {
@@ -65,7 +71,8 @@ class GameTable extends React.Component {
   }
 
   handleMouseDown() {
-    if(this.props.userName == this.state.players[this.state.turn].name) {
+    if(this.props.userName == this.state.players[this.state.turn].name
+    && this.state.gameStarted && !this.state.gameOver) {
       const stage = this.stage.getStage();
       let isDotCheck = new RegExp('^circle');
       if(isDotCheck.test(stage.clickStartShape.attrs.name)) {
@@ -76,7 +83,8 @@ class GameTable extends React.Component {
   }
 
   handleMouseUp() {
-    if(this.props.userName == this.state.players[this.state.turn].name) {
+    if(this.props.userName == this.state.players[this.state.turn].name
+      && this.state.gameStarted && !this.state.gameOver) {
     const stage = this.stage.getStage();
     const point = stage.getPointerPosition();
     let isDotCheck = new RegExp('^circle');
@@ -107,9 +115,11 @@ class GameTable extends React.Component {
         this.channel.push("draw", {input: now,
           name:this.state.tableName, user:this.props.userName})
           .receive("ok", this.got_view.bind(this));
+          // this.got_view.bind(this)
+
         console.log(stateCpy.linesDrawn[1]);
         console.log(stateCpy.linesDrawn[0]);
-        stateCpy.turn = (stateCpy.turn + 1) % stateCpy.players.length;
+        // stateCpy.turn = (stateCpy.turn + 1) % stateCpy.players.length;
         this.setState(stateCpy);
       }
 
@@ -147,7 +157,7 @@ class GameTable extends React.Component {
 
   handleMouseMove() {
     if(this.props.userName == this.state.players[this.state.turn].name
-      && this.drawing) {
+      && this.drawing && this.state.gameStarted && !this.state.gameOver) {
 
       const stage = this.stage.getStage();
       const point = stage.getPointerPosition();
