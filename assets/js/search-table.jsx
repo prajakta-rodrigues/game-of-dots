@@ -5,11 +5,9 @@ import logo from "../images/boxes.jpg";
 import plus from "../images/plus.png";
 import GameTable from "./game-table";
 import SearchField from "react-search-field";
-import { Link } from 'react-router-dom';
-import { Modal, ButtonToolbar } from 'react-bootstrap';
-import {Navbar,NavDropdown, Nav, Form, FormControl, Button} from 'react-bootstrap';
+import { Modal} from 'react-bootstrap';
+import {Form, FormControl, Button} from 'react-bootstrap';
 import socket from './socket';
-import $ from 'jquery';
 
 class Tables extends React.Component {
     constructor(props) {
@@ -17,8 +15,8 @@ class Tables extends React.Component {
         this.state = {
             tables : [],
             showPopup: false,
-            show: false,
-            modalShow: false,
+            // show: false,
+            //modalShow: false,
             userName: props.userName,
             tableName: '',
             length: 3,
@@ -27,11 +25,12 @@ class Tables extends React.Component {
             createTable: false,
             capacity: 2,
             tableTaken: false,
+            watchGame: false,
+            filtered: []
         };
 
         let channel = socket.channel('login:Admin', {});
         this.channel = channel;
-        console.log("login:Admin");
         this.channel
         .join()
         .receive("ok", this.got_view.bind(this))
@@ -55,19 +54,22 @@ class Tables extends React.Component {
         });
     }
 
-    // addTable() {
-    //     let stateCpy = _.cloneDeep(this.state);
-    //     let tables = this.state.tables;
-    //     let new_tables = tables.concat(this.state.tableName);
-    //     stateCpy.tables = new_tables
-    //     this.setState(stateCpy);
-    //     this.togglePopup();
-    //     this.joinTable(this.state.tableName);
-    // }
+    handleChange(e) {
+        let newList = [];
+        let nameList = this.state.tables.map(item => item.name);
+        if(e.target.value != "") {
+            newList = nameList.filter(item => 
+                item.includes(e.target.value)
+            );
+        } else {
+            newList = nameList;
+        }
+        this.setState({
+            filtered : newList
+        });
+    }
 
     addtable() {
-        console.log("inside add table")
-        console.log(this.state.tableName);
         if(this.state.tableName != "") {
             let stateCpy = _.cloneDeep(this.state);
             stateCpy.createTable = true
@@ -86,12 +88,14 @@ class Tables extends React.Component {
         }
     }
 
+    watchGame() {
+        this.setState({watchGame: true})
+    }
+
     joinTable(tableName, createTable) {
         this.setState({joinGame: true,
                         tableName: tableName});
         
-        console.log("check create table val");
-        console.log(createTable);
 
         if(createTable == false) {
             this.channel.push("join_table", {table_name: tableName, player_name: this.state.userName}).
@@ -102,17 +106,8 @@ class Tables extends React.Component {
 
     getTableName(e) {
         let tabName = e.target.value;
-        console.log("table name.........");
-        console.log(tabName);
         let tables = this.state.tables;
         this.setState({tableTaken: false})
-        // for(let i = 0; i < tables.length; i++) {
-        //     if(tables[i].name == tabName) {
-        //         //tabletaken = true;
-        //         this.setState({tableTaken: true})
-        //         break;
-        //     }
-        // }
         if(tables.includes(tabName)) {
             this.setState({tableTaken: true})
         }
@@ -124,8 +119,6 @@ class Tables extends React.Component {
         let length = 3;
         let breadth = 3;
         let capacity = 2;
-        console.log("get dimensions");
-        console.log(dimensions)
         if(dimensions == "4*4") {
             length = 4;
             breadth = 4;
@@ -163,47 +156,48 @@ class Tables extends React.Component {
     }
 
     render() {
-    if(!this.state.joinGame) {
+    if(!this.state.joinGame && !this.state.watchGame) {
         let rows = [];
     let tables = this.state.tables;
+    let filtered = this.state.filtered;
+    if(this.state.filtered.length == 0) {
+        filtered = tables;
+    }
     let index = 0;
-    console.log("table length");
-    console.log(tables.length);
-    console.log(tables);
-    for(let i = 0; i < tables.length; i++) {
+    for(let i = 0; i < filtered.length; i++) {
         let cols = []
         for(let j = 0; j < 3; j++) {
-            if(index < tables.length) {
+            if(index < filtered.length) {
                 let tableName = this.state.tables[index].name;
                 let capacity = this.state.tables[index].capacity;
-                //let players = this.state.tables[index].players;
-                //let includesPlayer = players.includes(this.state.userName);
-            let col = <div className="column">
-            <div className="product-grid3">
-                <div className="product-image3">
-                    <a href="#">
-                        <img className="pic-1" src={logo} alt={"grid-image1"}/>
-                        <img className="pic-2" src={logo} alt={"grid-image2"}/>
+            let col = <div className="column" key={tableName}>
+            <div className="product-grid3" key={tableName + "grid3"}>
+                <div className="product-image3" key={tableName + "img3"}>
+                    <a href="#" key={tableName + "k1"}>
+                        <img className="pic-1" src={logo} alt={"grid-image1"} key={tableName + "pc1"}/>
+                        <img className="pic-2" src={logo} alt={"grid-image2"} key={tableName + "pc2"}/>
                     </a>
                     
                 </div>
-                <div className="product-content">
-                    <h3 className="title"><a href="#">{tableName}</a> <a href="#">Capacity: {capacity}</a></h3>
-                    <div className="price">
-                        {capacity == 0? <button onClick={() => this.joinTable(tableName, false)} disabled>Join</button>
-                        : <button onClick={() => this.joinTable(tableName, false)}>Join</button>}
+                <div className="product-content" key={tableName + "prod"}>
+                    <h3 className="title" key={tableName + "til"}><a href="#" key={tableName + "anc1"}>{tableName}</a> 
+                    <a href="#" key={tableName + "anc2"}>Capacity: {capacity}</a></h3>
+                    <div className="price" key={tableName + "price"}>
+                        {capacity == 0? <button onClick={() => this.joinTable(tableName, false)} key={tableName + "dis"} disabled>Join</button>
+                        : <button onClick={() => this.joinTable(tableName, false)} key={tableName + "but"}>Join</button>}
+                        <button onClick={() => this.watchGame()} key={tableName + "watch"}>Watch</button>
                     </div>
                 </div>
             </div>
         </div>
         cols.push(col);
             } else {
-                let col = <div className="column"></div>
+                let col = <div className="column" key={index++}></div>
                 cols.push(col);
             }
             index++;
         }
-        rows.push(<div className="row">{cols}</div>);
+        rows.push(<div className="row" key={i}>{cols}</div>);
     }
 
     let addSign = <a onClick={() => this.togglePopup()}><img src={plus}
@@ -223,17 +217,9 @@ class Tables extends React.Component {
        />
               : null
               }
-                    <div className='navbar'>
-                    <ul>
-                        <li><a className="active" href="#home">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                    </div>
-                    <Form inline>
-                    <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                    <Button variant="outline-success">Search</Button>
-                    </Form>
+                    
+                    <input type="text" placeholder="Search..." onChange={(e) => this.handleChange(e)} className="mr-sm-2" />
+                    
                     {addSign}
                     <div>{rows}</div>
 
@@ -243,7 +229,7 @@ class Tables extends React.Component {
             )
         }else {
             let attributes = {tablename: this.state.tableName, username: this.state.userName, length: this.state.length,
-            breadth: this.state.breadth, createTable: this.state.createTable, capacity: this.state.capacity};
+            breadth: this.state.breadth, createTable: this.state.createTable, capacity: this.state.capacity, watchGame: this.state.watchGame};
             let channel = socket.channel("games:" + this.state.tableName, attributes);
             return <GameTable userName = {this.state.userName} 
             tableName = {this.state.tableName}
@@ -259,8 +245,6 @@ class CreateTable extends React.Component {
     }
 
     render() {
-        console.log("table taken???????");
-        console.log(this.props.tableTaken);
         return (
             <Modal {...this.props}>
               <Modal.Header>
@@ -298,60 +282,6 @@ class CreateTable extends React.Component {
             </Modal>
           );
     }
-    }
-
-    class Search extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                filtered : []
-            }
-    
-            this.handleChange = this.handleChange.bind(this);
-        }
-    
-        componentDidMount() {
-            this.setState({
-                filtered: this.props.items
-            });
-        }
-    
-        componentWillReceiveProps(nextProps) {
-            this.setState({
-              filtered: nextProps.items
-            });
-          }
-          
-    
-        handleChange(e) {
-            let currentList = [];
-            let newList = [];
-            console.log("inside this")
-            if(e.target.value != "") {
-                currentList = this.props.items;
-                newList = currentList.filter(item => {
-                    const lc = item.toLowerCase();
-                    const filter = e.target.value.toLowerCase();
-                    return lc.includes(filter);
-                });
-            } else {
-                newList = this.props.items;
-            }
-    
-            this.setState({
-                filtered : newList
-            });
-            console.log(this.state.filtered)
-        }
-    
-        render() {
-            let searchBar = <div>
-                <SearchField placeholder="Search..." onChange={this.handleChange} className="input" />
-            </div>
-            return <div>
-                {searchBar}
-            </div>
-        }
     }
 
 export default Tables;

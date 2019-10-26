@@ -4,7 +4,7 @@ defmodule GameOfDotsWeb.GamesChannel do
   alias GameOfDots.BackupAgent
 
   def join("games:" <> name, payload, socket) do
-    IO.inspect(payload)
+    
     if authorized?(payload) do
       table_name = Map.get(payload, "tablename")
       user_name = Map.get(payload, "username")
@@ -12,26 +12,47 @@ defmodule GameOfDotsWeb.GamesChannel do
       breadth = Map.get(payload, "breadth")
       create_table = Map.get(payload, "createTable")
       capacity = Map.get(payload, "capacity")
-      IO.puts("create table")
-      IO.inspect(create_table)
-      game = BackupAgent.get(name) || Game.new(table_name, user_name, length, breadth, capacity)
-      if create_table == false do
-        players = game.players
-        IO.inspect(players)
-        game = Game.add_player(game, user_name)
-        IO.inspect(game)
-        BackupAgent.put(name, game)
-      else
-        BackupAgent.put(name, game)
-      end
-      game = BackupAgent.get(name)
-      socket = socket
+      watch_table = Map.get(payload, "watchGame")
+
+      if watch_table == true  do
+        game = BackupAgent.get(name)
+        socket = socket
       |> assign(:game, game)
       |> assign(:name, name)
       {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
+      else
+        game = BackupAgent.get(name) || Game.new(table_name, user_name, length, breadth, capacity)
+        if create_table == false do
+          players = game.players
+          
+          game = Game.add_player(game, user_name)
+          
+          
+          BackupAgent.put(name, game)
+        else
+          BackupAgent.put(name, game)
+        end
+        game = BackupAgent.get(name)
+
+        socket = socket
+      |> assign(:game, game)
+      |> assign(:name, name)
+      {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
+      end
+      
     else
       {:error, %{reason: "unauthorized"}}
     end
+  end
+
+  def handle_in("send_msg", %{"msg" => msg}, socket) do
+    name = socket.assigns[:name]
+    game = Game.append_msg(socket.assigns[:game], msg)
+    socket = assign(socket, :game, game)
+    broadcast! socket, "sendmsg", %{game => game}
+    {:noreply, socket}
+    BackupAgent.put(name, game)
+    {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
   end
 
   # Add authorization logic here as required.
