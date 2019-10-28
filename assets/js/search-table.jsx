@@ -202,7 +202,7 @@ class Tables extends React.Component {
                 <div className="product-image3" key={tableName + "img3"}>
                     <a href="#" key={tableName + "k1"}>
                         <img className="pic-1" src={logo} alt={"grid-image1"} key={tableName + "pc1"}/>
-            
+
                     </a>
 
                 </div>
@@ -246,7 +246,8 @@ class Tables extends React.Component {
               : null
               }
 
-                    <input type="text" placeholder="Search..." onChange={(e) => this.handleChange(e)} className="mr-sm-2" />
+                    <input type="text" placeholder="Search for a game table..." onChange={(e) => this.handleChange(e)} className="mr-sm-2" />
+                    <h3>Add a new game table</h3>
 
                     {addSign}
                     <div>{rows}</div>

@@ -224,7 +224,7 @@ resetGame() {
     let messages = [];
     for(var i = 0; i < this.state.messages.length; i++) {
       messages.push(<h5>{this.state.messages[i].name}
-         says: {this.state.messages[i].text}</h5>);
+         : {this.state.messages[i].text}</h5>);
     }
     console.log("messages" , messages);
 
@@ -355,12 +355,12 @@ resetGame() {
                 <div className="chat-messages"> {messages}
                 </div>
                 <div className="history">
-                  <input type="text" placeholder="Type your message..."
+                  <input type="text" placeholder="Type here..."
                      className="mr-sm-2" id="snd-msg"/>
+                   <button onClick={this.sendMessage.bind(this)}>Send</button>
+
                      </div>
-                    <div className="send">
-                  <button onClick={this.sendMessage.bind(this)}>Send</button>
-                  </div>
+
               </div>
               </div>
           </Portal>
