@@ -331,9 +331,11 @@ resetGame() {
                 {this.state.players.map(item => (
                   <div key={item.name + item.color} className="info">
                     <div key={"row" + item.name + item.color} className="row">
-                      <div key={item.name} className="column">{item.name}</div>
-                      <div key={item.color} className="column">{item.color}</div>
-                      <div key={item.score} className="column">{item.score}</div>
+                      <div key={item.name} className="column center-aligned">{item.name}</div>
+                      <div key={item.color}
+                        className="column center-aligned">
+                        <div className="player-color" style={{backgroundColor: item.color}}></div></div>
+                      <div key={item.score} className="column center-aligned">{item.score}</div>
                     </div>
                   </div>
 

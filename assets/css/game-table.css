@@ -43,3 +43,20 @@
 .history {
   display: flex;
 }
+
+.player-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin:auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+
+.center-aligned {
+  text-align: center;
+  position: relative;
+}
