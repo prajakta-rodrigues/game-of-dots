@@ -1,4 +1,4 @@
-# game-of-dots
+# Game of Dots
 Based on the age-old pen and paper game of joining dots to create maximum number of boxes
 
 To start your Phoenix server:
