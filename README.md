@@ -1,17 +1,19 @@
-# Game of Dots
+# Overview
 Based on the age-old pen and paper game of joining dots to create maximum number of boxes
 
+# Install
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
   * Install Node.js dependencies with `cd assets && npm install`
   * Start Phoenix endpoint with `mix phx.server`
 
+# Use
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-## Learn more
+# Learn more
 
   * Official website: http://www.phoenixframework.org/
   * Guides: https://hexdocs.pm/phoenix/overview.html
@@ -20,5 +22,5 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Source: https://github.com/phoenixframework/phoenix
 
 
-## Attribution
+# Attribution
   * https://github.com/NatTuck/hangman-2019-01
