@@ -1,5 +1,9 @@
 # Overview
-Based on the age-old pen and paper game of joining dots to create maximum number of boxes
+Before techology stormed our lives, we spent our childhood playing indoor games using pen and paper. This game of dots is one of those old-school games which you can now play online.
+
+## Contributing
+Based on regions and countries, various complexity levels of this game is known. Feel free to add your own version or improve existing version by forking the repository and  raising a pull request.
+
 
 # Install
 To start your Phoenix server:
